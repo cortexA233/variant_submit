@@ -1,16 +1,23 @@
 
+
 export class HeroFSM {
     constructor(hero, params = {}) {
         this.hero = hero;
         this.currentState = null
-        this.transitState(new HeroIdleState(hero, {}))
+        this.currentStateKey = null;
+        this.transitState("Idle")
     }
 
-    transitState(newState, params = {}) {
-        if(this.currentState){
-            this.currentState.exitState();
+    transitState(stateKey, params = {}) {
+        const StateClass = HERO_STATE_MAP[stateKey];
+        if (!StateClass) {
+            throw new Error(`Unknown state: ${stateKey}`);
         }
-        this.currentState = newState;
+
+        this.currentState?.exitState();
+        this.currentStateKey = stateKey;
+        this.currentState = new StateClass(this.hero);
+        this.currentState.enterState(params);
     }
 
     destroy() {}
@@ -19,7 +26,6 @@ export class HeroFSM {
 class HeroBaseState {
     constructor(hero, params = {}) {
         this.hero = hero;
-        this.enterState(params)
     }
 
     enterState(params = {}) {}
@@ -33,7 +39,7 @@ class HeroBaseState {
     }
 }
 
-class HeroIdleState extends HeroBaseState {
+export class HeroIdleState extends HeroBaseState {
     constructor(hero, params = {}) {
         super(hero, params);
     }
@@ -48,7 +54,7 @@ class HeroIdleState extends HeroBaseState {
     }
 }
 
-class HeroSucceedState extends HeroBaseState {
+export class HeroSucceedState extends HeroBaseState {
     constructor(hero, params = {}) {
         super(hero, params);
     }
@@ -58,7 +64,7 @@ class HeroSucceedState extends HeroBaseState {
     }
 }
 
-class HeroFailState extends HeroBaseState {
+export class HeroFailState extends HeroBaseState {
     constructor(hero, params = {}) {
         super(hero, params);
     }
@@ -66,4 +72,10 @@ class HeroFailState extends HeroBaseState {
     destroy() {
         super.destroy()
     }
+}
+
+export const HERO_STATE_MAP = {
+    Idle: HeroIdleState,
+    Succeed: HeroSucceedState,
+    Fail: HeroFailState,
 }

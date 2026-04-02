@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import {GAME_CONFIG} from "../config/GameConfig.js";
 
 
@@ -60,24 +59,20 @@ export class ResultPage {
             .setVisible(false);
     }
 
-    showResults() {
-        // const survivedMs = this.time.now - this.runStartedAt;
-        // const headline = pick(CRASH_HEADLINES, this.random);
+    showResults(resultData = {}) {
+        const {
+            headline = 'Stream complete',
+            stats = 'Tap to restart.',
+            prompt = 'Press SPACE, ENTER, or tap to go live again.'
+        } = resultData;
 
         this.setVisible(true);
-        this.resultsHeadline.setText("111111");
-        this.resultsStats
-            .setText("22222!!!!!");
-            // .setText(
-            //     `Prompts survived: ${this.runState.resolvedPrompts}\nTime on stream: ${formatSeconds(
-            //         survivedMs
-            //     )}s\nFinal hype: ${Math.round(this.runState.hype)} / 100\nCrash meter: ${Math.round(
-            //         this.runState.crash
-            //     )} / ${this.runState.crashLimit}`
-            // );
+        this.resultsHeadline.setText(headline);
+        this.resultsStats.setText(stats);
+        this.resultsPrompt.setText(prompt);
     }
 
-    setVisible(visible) {this.resultsBackdrop.setVisible(visible);
+    setVisible(visible) {
         this.resultsBackdrop.setVisible(visible);
         this.resultsPanel.setVisible(visible);
         this.resultsHeadline.setVisible(visible);
