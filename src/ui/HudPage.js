@@ -5,28 +5,11 @@ import {GAME_CONFIG} from "../config/GameConfig.js";
 export class HudPage {
     constructor(scene) {
         this.scene = scene;
+        this.buildHudPage();
+        this.buildPlayerStatus();
     }
-    
-    buildHudPage() {
-        this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 86, GAME_CONFIG.sceneConfig.screenWidth - 48, 128, 0x110f22, 0.9).setDepth(5);
-        this.scene.add.circle(72, 52, 7, 0xff5e7c).setDepth(6);
-        this.scene.add
-            .text(88, 38, 'LIVE FAIL STREAM', {
-                fontFamily: 'Trebuchet MS',
-                fontSize: '26px',
-                fontStyle: 'bold',
-                color: '#fff3f8'
-            })
-            .setDepth(6);
-        this.scene.add
-            .text(516, 40, 'Hold hype. Avoid the crash.', {
-                fontFamily: 'Georgia',
-                fontSize: '16px',
-                color: '#bdb5db'
-            })
-            .setOrigin(1, 0)
-            .setDepth(6);
 
+    buildPlayerStatus() {
         this.scene.add
             .text(56, 78, 'HYPE', {
                 fontFamily: 'Trebuchet MS',
@@ -64,7 +47,30 @@ export class HudPage {
             })
             .setDepth(7);
 
-        this.promptBanner = this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 212, GAME_CONFIG.sceneConfig.screenWidth - 88, 92, 0x1a1732, 0.95).setDepth(8);
+    }
+    
+    buildHudPage() {
+        this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 86, GAME_CONFIG.sceneConfig.screenWidth - 48, 128, 0x110f22, 0.9).setDepth(5);
+        this.scene.add.circle(72, 52, 7, 0xff5e7c).setDepth(6);
+        this.scene.add
+            .text(88, 38, 'LIVE FAIL STREAM', {
+                fontFamily: 'Trebuchet MS',
+                fontSize: '26px',
+                fontStyle: 'bold',
+                color: '#fff3f8'
+            })
+            .setDepth(6);
+        this.scene.add
+            .text(666, 40, 'Hold your HYPE and avoid to increase CRASH!', {
+                fontFamily: 'Georgia',
+                fontSize: '16px',
+                color: '#bdb5db'
+            })
+            .setOrigin(1, 0)
+            .setDepth(6);
+
+        this.promptBanner = this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 212,
+            GAME_CONFIG.sceneConfig.screenWidth - 88, 92, 0x1a1732, 0.95).setDepth(8);
         this.promptBanner.setStrokeStyle(2, 0x786dcb, 0.9);
         this.promptText = this.scene.add
             .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 196, '', {
