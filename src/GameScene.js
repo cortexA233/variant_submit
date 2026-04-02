@@ -10,6 +10,7 @@ import {GameSceneFSM} from "./GameSceneFSM.js";
 import {PROMPTS} from "./config/PromptConfig.js";
 import {ANIMATIONS} from "./config/AnimationConfig.js";
 import {NOISE_LIBRARY} from "./config/NoiseConfig.js";
+import {HERO_STATE_MAP} from "./entities/HeroFSM.js";
 
 const HUD_BAR_WIDTH = 250;
 const MAX_ROUNDS = 4;
@@ -69,8 +70,8 @@ export class GameScene extends Phaser.Scene {
 
     enterBootState() {
         this.initializeRunState();
-        this.hero?.setHeroAnimation('idle', true);
-        this.resultPage?.setVisible(false);
+        this.hero.stateMachine.transitState("Idle")
+        this.resultPage.setVisible(false);
         this.playerInteractionPage?.setPrompt(null);
         this.updateHud();
     }
@@ -78,8 +79,8 @@ export class GameScene extends Phaser.Scene {
     enterPromptingState() {
         this.activePrompt = this.createPromptRound();
         this.playerInteractionPage?.setPrompt(this.activePrompt);
-        this.resultPage?.setVisible(false);
-        this.hero?.setHeroAnimation('idle', true);
+        this.resultPage.setVisible(false);
+        this.hero.stateMachine.transitState("Idle")
 
         if (this.hudPage) {
             this.hudPage.promptText.setText(this.activePrompt.text);

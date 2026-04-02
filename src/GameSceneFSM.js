@@ -44,7 +44,7 @@ class GameSceneBootState extends GameSceneBaseState {
     }
 
     enterState(params = {}) {
-        this.scene.enterBootState?.(params);
+        this.scene.enterBootState(params);
         this.stateMachine.transitState(new GameScenePromptingState(this.scene, this.stateMachine));
     }
 }

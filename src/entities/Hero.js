@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {HeroFSM} from "./HeroFSM.js";
+import {HeroFSM, HERO_STATE_MAP} from "./HeroFSM.js";
 import {ANIMATIONS} from "../config/AnimationConfig.js";
 import {GAME_CONFIG} from "../config/GameConfig.js";
 
@@ -28,23 +28,20 @@ export class Hero extends Phaser.GameObjects.Container {
     }
 
     reset(position = this.spawnPoint) {
-        // this.lockedFallbackAnimation = this.config.animations.idle;
-        // this.currentLoopAnimation = this.config.animations.idle;
-        // this.overrideLoopAnimation = null;
         this.spineObject.x = position.x;
         this.spineObject.y = position.y;
-        this.stateMachine.transitState(new HeroIdleState(this))
+        this.stateMachine.transitState(new HERO_STATE_MAP.Idle(this))
     }
 
     setHeroAnimation(animationKey, isLoop=false) {
-        this.overrideLoopAnimation = null;
         const anim_config = this.config.animations[animationKey];
         if(anim_config) {
             this.spineObject.animationState.setAnimation(0, anim_config.animation, isLoop);
         }
     }
 
-    destroy() {
+    destroy(fromScene = false) {
+        super.destroy(fromScene);
         this.spineObject?.destroy();
     }
 }
