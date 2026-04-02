@@ -6,6 +6,7 @@ export class PlayerInteractionPage{
         this.scene = scene;
         this.choiceCards = {};
         this.activePrompt = null;
+        this.isInteractionEnabled = true;
         this.buildChoiceCards();
     }
 
@@ -81,9 +82,38 @@ export class PlayerInteractionPage{
         };
     }
 
-    handleChoice(side) {
+    setPrompt(prompt) {
+        this.activePrompt = prompt;
 
-        const option = null;
+        for (const [side, card] of Object.entries(this.choiceCards)) {
+            const option = prompt?.options?.find((item) => item.side === side) ?? null;
+            card.labelText.setText(option?.reaction?.label ?? '');
+        }
+    }
+
+    setInteractionEnabled(enabled) {
+        this.isInteractionEnabled = enabled;
+
+        for (const card of Object.values(this.choiceCards)) {
+            if (card.background.input) {
+                card.background.input.enabled = enabled;
+            } else if (enabled) {
+                card.background.setInteractive({ useHandCursor: true });
+            }
+
+            card.glow.setAlpha(enabled ? 0.14 : 0.06);
+            card.background.setAlpha(enabled ? 0.98 : 0.62);
+            card.keyText.setAlpha(enabled ? 1 : 0.65);
+            card.labelText.setAlpha(enabled ? 1 : 0.65);
+        }
+    }
+
+    handleChoice(side) {
+        if (!this.isInteractionEnabled) {
+            return;
+        }
+
+        const option = this.activePrompt?.options?.find((item) => item.side === side) ?? null;
 
         if (!option) {
             return;
