@@ -4,8 +4,9 @@ import {ANIMATIONS} from "../config/AnimationConfig.js";
 import {GAME_CONFIG} from "../config/GameConfig.js";
 
 
-export class Hero {
+export class Hero extends Phaser.GameObjects.Container {
     constructor(scene, position, config = {}) {
+        super(scene);
         this.scene = scene;
         this.config = {
             ...GAME_CONFIG.heroAssetsConfig,
@@ -20,7 +21,6 @@ export class Hero {
 
         this.spawnPoint = new Phaser.Math.Vector2(position.x, position.y);
         this.spineObject.animationState.data.defaultMix = this.config.defaultMix;
-
     }
 
     update(dt) {
