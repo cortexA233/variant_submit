@@ -1,6 +1,6 @@
 const SUCCESS_COMMENT_BURSTS = [
     'That switch landed!',
-    'The crowd is with you!'
+    'The audiences are with you!'
 ];
 
 const FAIL_COMMENT_BURSTS = [

@@ -41,7 +41,6 @@ export class GameScene extends Phaser.Scene {
     create() {
         this.initializeRunState();
 
-        this.lightShiningSpeed = 1;
         this.hudPage = null;
         this.resultPage = new ResultPage(this);
         this.startPage = new StartPage(this);
@@ -51,8 +50,11 @@ export class GameScene extends Phaser.Scene {
             GAME_CONFIG.sceneConfig.screenWidth * 0.5,
             GAME_CONFIG.sceneConfig.screenHeight * 0.7
         ));
+
         this.stage = null;
         this.danmakuManager = new DanmakuManager(this);
+        this.lightShiningSpeed = 1;
+
         this.stateMachine = new GameSceneFSM(this);
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -65,6 +67,7 @@ export class GameScene extends Phaser.Scene {
         this.updatePromptTimer(time);
     }
 
+    // The recorder of game data
     initializeRunState() {
         this.activePrompt = null;
         this.lastResolution = null;
@@ -122,15 +125,13 @@ export class GameScene extends Phaser.Scene {
         this.resultPage.setVisible(false);
         this.startRoundTimer();
 
-        if (this.hudPage) {
-            this.hudPage.promptText.setText(this.activePrompt.text);
-            const hasLastResolution = Boolean(this.lastResolution);
-            this.hudPage.feedbackText
-                .setText(this.lastResolution?.feedback ?? GAME_CONFIG.uiText.scene.emptyFeedback)
-                .setAlpha(hasLastResolution ? 1 : 0)
-                .setVisible(hasLastResolution);
-            this.hudPage.setPromptTimerVisible(true);
-        }
+        this.hudPage.promptText.setText(this.activePrompt.text);
+        const hasLastResolution = Boolean(this.lastResolution);
+        this.hudPage.feedbackText
+            .setText(this.lastResolution?.feedback ?? GAME_CONFIG.uiText.scene.emptyFeedback)
+            .setAlpha(hasLastResolution ? 1 : 0)
+            .setVisible(hasLastResolution);
+        this.hudPage.setPromptTimerVisible(true);
 
         this.updateHud();
     }

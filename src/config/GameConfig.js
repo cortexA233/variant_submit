@@ -50,16 +50,16 @@ export const GAME_CONFIG = {
             hypeLabel: 'HYPE',
             crashLabel: 'CRASH',
             title: 'DANCE LIVE ROOM',
-            subtitle: 'Read the crowd, switch styles, and never miss the beat!'
+            subtitle: 'Read the audiences, switch styles, and never miss the beat!'
         },
         start: {
-            topInstruction: 'Read the crowd\'s cue,\r tap the left or right style card to change your dance. ' +
+            topInstruction: 'Read the audiences\' cue,\r tap the left or right style card to change your dance. ' +
                 '\rKeep your HYPE value, and don’t let your CRASH get too high.' +
                 '\rDon\'t let the timer run out!',
             startInstruction: 'Tap anywhere to start'
         },
         interaction: {
-            choiceInstruction: 'Tap a card to switch your dance style for the crowd.',
+            choiceInstruction: 'Tap a card to switch your dance style for the audiences.',
             startInstruction: 'Tap anywhere to start',
             leftKeyLabel: 'LEFT',
             rightKeyLabel: 'RIGHT'

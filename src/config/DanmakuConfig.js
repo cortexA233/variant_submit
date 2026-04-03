@@ -13,8 +13,8 @@ export const DANMAKU_CONFIG = {
         max: 400
     },
     spawnBand: {
-        minY: 350,
-        maxY: 550
+        minY: 400,
+        maxY: 600
     },
     offscreenMargin: 80,
     depth: 20,
@@ -47,7 +47,7 @@ export const DANMAKU_CONFIG = {
             fontFamily: 'Trebuchet MS',
             fontSize: '18px',
             // fontStyle: 'bold',
-            color: '#ffe5ef',
+            color: '#ff0000',
             stroke: '#350b19',
             strokeThickness: 5
         }
