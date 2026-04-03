@@ -27,7 +27,7 @@ export const GAME_CONFIG = {
         resultDelayMs: 2000,
         feedbackDisplayDurationMs: 1500,
         urgentTimerThresholdRatio: 0.35,
-        minimumTimerFillRatio: 0.02
+        minimumTimerFillRatio: 0.01
     },
     cardConfig: {
         cardTheme: {
@@ -54,6 +54,7 @@ export const GAME_CONFIG = {
         },
         start: {
             topInstruction: 'Read the crowd\'s cue,\r tap the left or right style card to change your dance. ' +
+                '\rKeep your HYPE value, and don’t let your CRASH get too high.' +
                 '\rDon\'t let the timer run out!',
             startInstruction: 'Tap anywhere to start'
         },
@@ -70,8 +71,8 @@ export const GAME_CONFIG = {
             timeoutHeadline: 'You missed the beat',
             crashHeadline: 'You were crashed by pressure',
             resultStatsCuesLabel: 'Cues cleared',
-            resultStatsHypeLabel: 'Final hype',
-            resultStatsCrashLabel: 'Final crash'
+            resultStatsHypeLabel: 'Final HYPE',
+            resultStatsCrashLabel: 'Final CRASH'
         },
         result: {
             defaultHeadline: 'Set complete',

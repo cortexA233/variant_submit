@@ -1,3 +1,4 @@
+
 export class GameSceneFSM {
     constructor(scene, params = {}) {
         this.scene = scene;
@@ -28,6 +29,8 @@ class GameSceneBaseState {
         this.stateMachine = stateMachine;
     }
 
+    handleUpdate(time, deltaTime) {}
+
     enterState(params = {}) {}
 
     exitState() {}
@@ -52,6 +55,11 @@ class GameScenePromptingState extends GameSceneBaseState {
         this.name = 'prompting';
     }
 
+    handleUpdate(time, deltaTime) {
+        this.scene.stage.updateStage(time, this.lightShiningSpeed);
+        this.scene.updatePromptTimer(time);
+    }
+
     enterState(params = {}) {
         this.scene.setInteractionEnabled(true);
         this.scene.enterPromptingState(params);
@@ -62,6 +70,10 @@ class GameSceneResolvingState extends GameSceneBaseState {
     constructor(scene, stateMachine) {
         super(scene, stateMachine);
         this.name = 'resolving';
+    }
+
+    handleUpdate(time, deltaTime) {
+        this.scene.stage.updateStage(time, this.lightShiningSpeed);
     }
 
     enterState(params = {}) {
@@ -90,6 +102,7 @@ class GameSceneResultState extends GameSceneBaseState {
 
     enterState(params = {}) {
         this.scene.enterResultState(params.result ?? null);
+        this.scene.stage.closeSpotlight()
     }
 }
 

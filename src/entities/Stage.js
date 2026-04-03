@@ -19,6 +19,11 @@ export class Stage extends Phaser.GameObjects.Container {
         this.updateSpotlight(0);
     }
 
+    closeSpotlight() {
+        this.spotlightGraphics.clear();
+        this.spotlightFrontGlow.clear();
+    }
+
     updateSpotlight(time, speed=1) {
         if (!this.scene.hero) return;
 
@@ -26,7 +31,6 @@ export class Stage extends Phaser.GameObjects.Container {
         const fg = this.spotlightFrontGlow;
 
         const width = GAME_CONFIG.sceneConfig.screenWidth;
-        const height = GAME_CONFIG.sceneConfig.screenHeight;
         const heroX = this.scene.hero.spineObject.x;
         const heroY = this.scene.hero.spineObject.y;
         const pulse = (Math.sin(time * 0.002 * speed) + 1) * 0.5;

@@ -10,6 +10,7 @@ import {StartPage} from './ui/StartPage.js';
 import {GameSceneFSM} from './GameSceneFSM.js';
 import {PROMPTS} from './config/PromptConfig.js';
 import {ANIMATIONS} from './config/AnimationConfig.js';
+import {DanmakuManager} from './entities/DanmakuManager.js';
 import {
     playComboTextMotion,
     playFeedbackTextMotion,
@@ -51,11 +52,16 @@ export class GameScene extends Phaser.Scene {
             GAME_CONFIG.sceneConfig.screenHeight * 0.7
         ));
         this.stage = null;
+        this.danmakuManager = new DanmakuManager(this);
         this.stateMachine = new GameSceneFSM(this);
+
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.danmakuManager.clear();
+        });
     }
 
     update(time, deltaTime) {
-        this.stage?.updateStage(time, this.lightShiningSpeed);
+        this.stateMachine.currentState.handleUpdate(time, deltaTime);
         this.updatePromptTimer(time);
     }
 
@@ -82,6 +88,7 @@ export class GameScene extends Phaser.Scene {
 
     enterBootState() {
         this.initializeRunState();
+        this.danmakuManager.clear();
         this.hero.stateMachine.transitState('Idle');
         this.resultPage.setVisible(false);
         this.startPage.setVisible(true);
@@ -189,6 +196,12 @@ export class GameScene extends Phaser.Scene {
             feedback: wasCorrect ? successFeedback : failFeedback
         };
 
+        if (wasCorrect) {
+            this.danmakuManager.spawnPositiveBurst(this.runState.comboCount);
+        } else {
+            this.danmakuManager.spawnNegativeBurst();
+        }
+
         this.hero.stateMachine.transitState('Reaction', {
             animationKey: option.reactionId
         });
@@ -228,6 +241,7 @@ export class GameScene extends Phaser.Scene {
     enterResultState(resultData) {
         this.clearRoundTimer();
         this.clearFeedbackHideEvent();
+        this.danmakuManager.clear();
         this.activePrompt = null;
         this.playerInteractionPage?.setPrompt(null);
         this.playerInteractionPage?.setInteractionEnabled(false);
@@ -359,14 +373,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     updatePromptTimer(time) {
-        if (!this.hudPage?.promptTimerFill || this.stateMachine?.currentStateKey !== 'Prompting') {
-            return;
-        }
-
-        if (!this.roundEndsAt || !this.currentRoundDuration) {
-            return;
-        }
-
         const remaining = Math.max(this.roundEndsAt - time, 0);
         const ratio = clamp(remaining / this.currentRoundDuration, 0, 1);
         this.setPromptTimerRatio(ratio);
@@ -416,4 +422,3 @@ export class GameScene extends Phaser.Scene {
         };
     }
 }
-
