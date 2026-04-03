@@ -76,22 +76,35 @@ export class GameScene extends Phaser.Scene {
         this.hero.stateMachine.transitState('Idle');
         this.resultPage.setVisible(false);
         this.playerInteractionPage?.setPrompt(null);
-        this.setPromptTimerRatio(1);
+        this.playerInteractionPage?.setInteractionEnabled(false);
+        this.playerInteractionPage?.showStartPrompt();
+
+        if (this.hudPage) {
+            this.hudPage.promptText.setText('');
+            this.hudPage.feedbackText.setText('').setAlpha(0);
+            this.hudPage.setPromptTimerVisible(false);
+        }
+
         this.updateHud();
+    }
+
+    startRunFromBoot() {
+        this.stateMachine.startRun();
     }
 
     enterPromptingState() {
         this.activePrompt = this.createPromptRound();
+        this.playerInteractionPage?.showPromptInstruction();
         this.playerInteractionPage?.setPrompt(this.activePrompt);
         this.resultPage.setVisible(false);
         this.startRoundTimer();
 
         if (this.hudPage) {
             this.hudPage.promptText.setText(this.activePrompt.text);
-            this.hudPage.warningText.setText(this.getWarningText());
             this.hudPage.feedbackText
                 .setText(this.lastResolution?.feedback ?? '')
                 .setAlpha(this.lastResolution ? 1 : 0);
+            this.hudPage.setPromptTimerVisible(true);
         }
 
         this.updateHud();
@@ -114,7 +127,7 @@ export class GameScene extends Phaser.Scene {
 
         if (timedOut) {
             this.runState.failedByTimeout = true;
-            this.runState.hype = clamp(this.runState.hype - 20, 0, 100);
+            this.runState.hype = clamp(this.runState.hype - 20, 0, GAME_CONFIG.playerStateConfig.hypeLimit);
             this.runState.crash = this.runState.crashLimit;
             this.lastResolution = {
                 wasCorrect: false,
@@ -129,8 +142,7 @@ export class GameScene extends Phaser.Scene {
                 this.hudPage.feedbackText
                     .setText(this.lastResolution.feedback)
                     .setAlpha(1);
-                this.hudPage.warningText.setText('You missed the beat. The room is gone.');
-            }
+                }
 
             this.updateHud();
 
@@ -144,14 +156,15 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.runState.failedByTimeout = false;
-        this.runState.hype = clamp(this.runState.hype + (wasCorrect ? 
-            GAME_CONFIG.playerStateConfig.hypeSuccess : GAME_CONFIG.playerStateConfig.hypeFailure),
-            0, GAME_CONFIG.playerStateConfig.hypeLimit
+        this.runState.hype = clamp(
+            this.runState.hype + (wasCorrect ? GAME_CONFIG.playerStateConfig.hypeSuccess : GAME_CONFIG.playerStateConfig.hypeFailure),
+            0,
+            GAME_CONFIG.playerStateConfig.hypeLimit
         );
         this.runState.crash = clamp(
-            this.runState.crash + (wasCorrect ?
-                GAME_CONFIG.playerStateConfig.crashSuccess : GAME_CONFIG.playerStateConfig.crashFailure),
-            0, this.runState.crashLimit
+            this.runState.crash + (wasCorrect ? GAME_CONFIG.playerStateConfig.crashSuccess : GAME_CONFIG.playerStateConfig.crashFailure),
+            0,
+            this.runState.crashLimit
         );
         this.lastResolution = {
             wasCorrect,
@@ -167,7 +180,6 @@ export class GameScene extends Phaser.Scene {
             this.hudPage.feedbackText
                 .setText(this.lastResolution.feedback)
                 .setAlpha(1);
-            this.hudPage.warningText.setText(this.getWarningText());
         }
 
         this.updateHud();
@@ -176,7 +188,10 @@ export class GameScene extends Phaser.Scene {
             this.hero.stateMachine.transitState('Fail', {isTimeOut: false});
             return {
                 nextState: 'result',
-                result: this.buildResultData()
+                result: {
+                    ...this.buildResultData(),
+                    delayMs: GAME_CONFIG.roundConfig.resultDelayMs,
+                },
             };
         }
 
@@ -187,6 +202,7 @@ export class GameScene extends Phaser.Scene {
         this.clearRoundTimer();
         this.activePrompt = null;
         this.playerInteractionPage?.setPrompt(null);
+        this.playerInteractionPage?.setInteractionEnabled(false);
         this.setPromptTimerRatio(0);
 
         const { delayMs = 0, ...finalResult } = resultData ?? {};
@@ -196,11 +212,7 @@ export class GameScene extends Phaser.Scene {
         this.resultRevealEvent = null;
 
         if (this.hudPage) {
-            this.hudPage.warningText.setText(this.runState.failedByTimeout
-                ? 'You missed the beat. Stream over.'
-                : this.runState.crash >= this.runState.crashLimit
-                    ? 'The chat turned on your routine.'
-                    : 'Set complete. Tap to go live again.');
+            this.hudPage.setPromptTimerVisible(false);
         }
 
         if (delayMs > 0 && this.time?.delayedCall) {
@@ -216,7 +228,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     resolveRound(option) {
-        this.stateMachine?.resolveRound(option);
+        this.stateMachine.resolveRound(option);
     }
 
     restartRun() {
@@ -273,18 +285,6 @@ export class GameScene extends Phaser.Scene {
         };
     }
 
-    getWarningText() {
-        if (this.runState.crash >= 67) {
-            return NOISE_LIBRARY.warnings[3].text;
-        }
-
-        if (this.runState.crash >= 34) {
-            return NOISE_LIBRARY.warnings[2].text;
-        }
-
-        return NOISE_LIBRARY.warnings[1].text;
-    }
-
     updatePromptTimer(time) {
         if (!this.hudPage?.promptTimerFill || this.stateMachine?.currentState?.name !== 'prompting') {
             return;
@@ -318,12 +318,12 @@ export class GameScene extends Phaser.Scene {
             return;
         }
 
-        const hypeRatio = this.runState.hype / 100;
+        const hypeRatio = this.runState.hype / GAME_CONFIG.playerStateConfig.hypeLimit;
         const crashRatio = this.runState.crash / this.runState.crashLimit;
 
         this.hudPage.hypeFill.width = HUD_BAR_WIDTH * hypeRatio;
         this.hudPage.crashFill.width = HUD_BAR_WIDTH * crashRatio;
-        this.hudPage.hypeValueText.setText(`${Math.round(this.runState.hype)} / 100`);
+        this.hudPage.hypeValueText.setText(`${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}`);
         this.hudPage.crashValueText.setText(`${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`);
     }
 
@@ -339,7 +339,7 @@ export class GameScene extends Phaser.Scene {
                     : 'You kept the dance floor alive',
             stats:
                 `Cues cleared: ${this.runState.resolvedRounds}\n` +
-                `Final hype: ${Math.round(this.runState.hype)} / 100\n` +
+                `Final hype: ${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}\n` +
                 `Crash meter: ${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`,
             prompt: 'Tap anywhere to go live again.'
         };

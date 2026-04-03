@@ -47,10 +47,6 @@ export class Hero extends Phaser.GameObjects.Container {
         return this.setHeroAnimation(animationKey, true);
     }
 
-    playFailAnimation() {
-        return this.setHeroAnimation('embarrassed', false);
-    }
-
     bindAnimationComplete(handler) {
         if (!handler || !this.spineObject?.animationState?.addListener) {
             return false;

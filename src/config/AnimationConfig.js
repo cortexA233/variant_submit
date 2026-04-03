@@ -5,7 +5,7 @@ export const ANIMATIONS = {
         animation: 'Idle',
         resultType: ''
     },
-    // dance success
+    // dance actions
     streetGroove: {
         id: 'streetGroove',
         label: 'Street Groove',

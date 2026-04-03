@@ -63,7 +63,7 @@ export class HeroFailState extends HeroBaseState {
 
     enterState(params = {}) {
         super.enterState(params);
-        if(params.isTimeOut) {
+        if(params?.isTimeOut) {
             this.hero.setHeroAnimation('embarrassed', false);
         }else{
             this.hero.setHeroAnimation('cry', true);

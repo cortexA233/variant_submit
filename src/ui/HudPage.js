@@ -56,9 +56,9 @@ export class HudPage {
             0x110f22,
             0.9
         ).setDepth(5);
-        this.scene.add.circle(72, 52, 7, 0xff5e7c).setDepth(6);
+        this.scene.add.circle(55, 350, 7, 0xff5e7c).setDepth(6);
         this.scene.add
-            .text(88, 38, 'DANCE LIVE ROOM', {
+            .text(70, 335, 'DANCE LIVE ROOM', {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '26px',
                 fontStyle: 'bold',
@@ -66,12 +66,13 @@ export class HudPage {
             })
             .setDepth(6);
         this.scene.add
-            .text(666, 40, 'Read the crowd, switch styles, and never miss the drop.', {
+            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 40,
+                'Read the crowd, switch styles, and never miss the beat!', {
                 fontFamily: 'Georgia',
-                fontSize: '16px',
+                fontSize: '19px',
                 color: '#bdb5db'
             })
-            .setOrigin(1, 0)
+            .setOrigin(0.5, 0)
             .setDepth(6);
 
         this.promptBanner = this.scene.add.rectangle(
@@ -95,18 +96,9 @@ export class HudPage {
             .setOrigin(0.5, 0.5)
             .setDepth(9);
 
-        this.warningText = this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 270, '', {
-                fontFamily: 'Trebuchet MS',
-                fontSize: '18px',
-                fontStyle: 'bold',
-                color: '#ffd7de'
-            })
-            .setOrigin(0.5, 0.5)
-            .setDepth(9);
-
-        this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x231f3d, 0.8)
-            .setOrigin(0, 0.5).setDepth(8);
+        this.promptTimerTrack = this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x231f3d, 0.8)
+            .setOrigin(0, 0.5)
+            .setDepth(8);
         this.promptTimerFill = this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x6effbf, 1)
             .setOrigin(0, 0.5)
             .setDepth(9);
@@ -123,5 +115,10 @@ export class HudPage {
             .setOrigin(0.5, 0.5)
             .setDepth(24)
             .setAlpha(0);
+    }
+
+    setPromptTimerVisible(visible) {
+        this.promptTimerTrack.setVisible(visible);
+        this.promptTimerFill.setVisible(visible);
     }
 }

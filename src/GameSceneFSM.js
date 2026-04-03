@@ -14,6 +14,10 @@ export class GameSceneFSM {
         this.currentState.enterState(params);
     }
 
+    startRun() {
+        this.currentState?.startRun();
+    }
+
     resolveRound(option) {
         this.currentState?.resolveRound(option);
     }
@@ -30,8 +34,6 @@ class GameSceneBaseState {
 
     enterState(params = {}) {}
 
-    resolveRound(option) {}
-
     exitState() {}
 
     destroy() {}
@@ -44,7 +46,10 @@ class GameSceneBootState extends GameSceneBaseState {
     }
 
     enterState(params = {}) {
-        this.scene.enterBootState(params);
+        this.scene.enterBootState?.(params);
+    }
+
+    startRun() {
         this.stateMachine.transitState(new GameScenePromptingState(this.scene, this.stateMachine));
     }
 }
