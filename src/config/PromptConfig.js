@@ -19,7 +19,7 @@ export const PROMPTS = [
     },
     {
         id: 'soften-the-mood',
-        text: 'Something softer, smoother, and more graceful.',
+        text: 'Something softer.',
         correctReactionIds: ['silkWave'],
         decoyReactionIds: ['rrrRush', 'bollyBeat', 'streetGroove'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
@@ -27,7 +27,7 @@ export const PROMPTS = [
     },
     {
         id: 'keep-it-clip-worthy',
-        text: 'A polished camera-ready switch, ready to be clip.',
+        text: 'A polished switch, ready to be clip.',
         correctReactionIds: ['stageStrut', 'neonBounce'],
         decoyReactionIds: ['bollyBeat', 'rrrRush', 'silkWave'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
@@ -35,7 +35,7 @@ export const PROMPTS = [
     },
     {
         id: 'bring-the-bounce',
-        text: 'They need something springy and bouncy.',
+        text: 'Something springy and bouncy!',
         correctReactionIds: ['streetGroove', 'bollyBeat'],
         decoyReactionIds: ['silkWave', 'stageStrut', 'rrrRush'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
@@ -43,7 +43,7 @@ export const PROMPTS = [
     },
     {
         id: 'give-it-roots',
-        text: 'Next move to feel richer and more rooted.',
+        text: 'Next move to feel richer and rooted.',
         correctReactionIds: ['bollyBeat', 'silkWave'],
         decoyReactionIds: ['neonBounce', 'rrrRush', 'stageStrut'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
