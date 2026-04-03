@@ -35,7 +35,7 @@ export class Hero extends Phaser.GameObjects.Container {
 
     setHeroAnimation(animationKey, isLoop = false) {
         const animationConfig = this.config.animations[animationKey];
-        if (animationConfig && this.spineObject?.animationState) {
+        if (animationConfig && this.spineObject.animationState) {
             this.spineObject.animationState.setAnimation(0, animationConfig.animation, isLoop);
             return true;
         }
@@ -48,7 +48,7 @@ export class Hero extends Phaser.GameObjects.Container {
     }
 
     bindAnimationComplete(handler) {
-        if (!handler || !this.spineObject?.animationState?.addListener) {
+        if (!handler || !this.spineObject.animationState.addListener) {
             return false;
         }
 
@@ -65,7 +65,7 @@ export class Hero extends Phaser.GameObjects.Container {
 
     clearAnimationComplete(handler) {
         const listener = this.animationCompleteListeners.get(handler);
-        if (!listener || !this.spineObject?.animationState?.removeListener) {
+        if (!listener || !this.spineObject.animationState.removeListener) {
             return false;
         }
 
@@ -77,9 +77,9 @@ export class Hero extends Phaser.GameObjects.Container {
     destroy(fromScene = false) {
         super.destroy(fromScene);
         for (const listener of this.animationCompleteListeners.values()) {
-            this.spineObject?.animationState?.removeListener?.(listener);
+            this.spineObject.animationState.removeListener(listener);
         }
         this.animationCompleteListeners.clear();
-        this.spineObject?.destroy();
+        this.spineObject.destroy();
     }
 }

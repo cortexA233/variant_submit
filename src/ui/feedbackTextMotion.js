@@ -24,11 +24,11 @@ export function resetFeedbackTextMotion(feedbackText, baseY) {
 }
 
 export function playFeedbackTextMotion({ feedbackText, tweens, baseY, wasCorrect }) {
-    if (!feedbackText || !tweens?.add) {
+    if (!feedbackText || !tweens.add) {
         return null;
     }
 
-    tweens.killTweensOf?.(feedbackText);
+    tweens.killTweensOf(feedbackText);
     resetFeedbackTextMotion(feedbackText, baseY);
 
     return tweens.add(wasCorrect

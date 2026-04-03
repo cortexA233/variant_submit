@@ -22,9 +22,9 @@ export const GAME_CONFIG = {
     },
     roundConfig: {
         baseDurationMs: 4500,
-        durationDecreaseSpeed: 100,
+        durationDecreaseSpeed: 150,
         minDurationMs: 1500,
-        resultDelayMs: 1500,
+        resultDelayMs: 2000,
         feedbackDisplayDurationMs: 1500,
         urgentTimerThresholdRatio: 0.35,
         minimumTimerFillRatio: 0.02
@@ -52,6 +52,11 @@ export const GAME_CONFIG = {
             title: 'DANCE LIVE ROOM',
             subtitle: 'Read the crowd, switch styles, and never miss the beat!'
         },
+        start: {
+            topInstruction: 'Read the crowds\' cue,\r tap the left or right style card to change your dance. ' +
+                '\rDon\'t let the timer run out!',
+            startInstruction: 'Tap anywhere to start'
+        },
         interaction: {
             choiceInstruction: 'Tap a card to switch your dance style for the crowd.',
             startInstruction: 'Tap anywhere to start',
@@ -61,17 +66,17 @@ export const GAME_CONFIG = {
         scene: {
             emptyPrompt: '',
             emptyFeedback: '',
-            timeoutResultPrompt: 'Tap anywhere to go live again.',
+            timeoutResultPrompt: 'Tap anywhere to try again.',
             timeoutHeadline: 'You missed the beat',
-            crashHeadline: 'You crashed because of too much failure',
+            crashHeadline: 'You were crashed by pressure',
             resultStatsCuesLabel: 'Cues cleared',
             resultStatsHypeLabel: 'Final hype',
-            resultStatsCrashLabel: 'Crash meter'
+            resultStatsCrashLabel: 'Final crash'
         },
         result: {
             defaultHeadline: 'Set complete',
             defaultStats: 'Tap to restart.',
-            defaultPrompt: 'Tap to go live again.'
+            defaultPrompt: 'Tap to try again.'
         }
     }
 };

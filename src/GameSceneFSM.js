@@ -6,20 +6,17 @@ export class GameSceneFSM {
     }
 
     transitState(newState, params = {}) {
-        if (this.currentState) {
-            this.currentState.exitState();
-        }
-
+        this.currentState?.exitState();
         this.currentState = newState;
         this.currentState.enterState(params);
     }
 
     startRun() {
-        this.currentState?.startRun();
+        this.currentState.startRun();
     }
 
     resolveRound(option) {
-        this.currentState?.resolveRound(option);
+        this.currentState.resolveRound(option);
     }
 
     destroy() {}
@@ -46,7 +43,7 @@ class GameSceneBootState extends GameSceneBaseState {
     }
 
     enterState(params = {}) {
-        this.scene.enterBootState?.(params);
+        this.scene.enterBootState(params);
     }
 
     startRun() {
@@ -62,8 +59,8 @@ class GameScenePromptingState extends GameSceneBaseState {
     }
 
     enterState(params = {}) {
-        this.scene.setInteractionEnabled?.(true);
-        this.scene.enterPromptingState?.(params);
+        this.scene.setInteractionEnabled(true);
+        this.scene.enterPromptingState(params);
     }
 
     resolveRound(option) {
@@ -80,9 +77,9 @@ class GameSceneResolvingState extends GameSceneBaseState {
     enterState(params = {}) {
         const { option = null } = params;
 
-        this.scene.setInteractionEnabled?.(false);
+        this.scene.setInteractionEnabled(false);
 
-        const outcome = this.scene.enterResolvingState?.(option) ?? { nextState: 'prompting' };
+        const outcome = this.scene.enterResolvingState(option) ?? { nextState: 'prompting' };
 
         if (outcome.nextState === 'result') {
             this.stateMachine.transitState(new GameSceneResultState(this.scene, this.stateMachine), {
@@ -102,6 +99,6 @@ class GameSceneResultState extends GameSceneBaseState {
     }
 
     enterState(params = {}) {
-        this.scene.enterResultState?.(params.result ?? null);
+        this.scene.enterResultState(params.result ?? null);
     }
 }

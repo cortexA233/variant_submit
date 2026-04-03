@@ -35,9 +35,9 @@ export class ResultPage {
         this.resultsPanel.setStrokeStyle(2, 0xff76ab, 0.9);
 
         this.resultsHeadline = this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 448, '', {
+            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 488, '', {
                 fontFamily: 'Trebuchet MS',
-                fontSize: '40px',
+                fontSize: '36px',
                 fontStyle: 'bold',
                 color: '#fff0f4',
                 align: 'center',

@@ -9,29 +9,17 @@ export class Stage extends Phaser.GameObjects.Container {
         this.buildStage();
     }
 
-    updateStage(time, deltaTime) {
-        this.updateSpotlight(time, deltaTime);
+    updateStage(time, speed) {
+        this.updateSpotlight(time, speed);
     }
 
     buildStage() {
-        // this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, GAME_CONFIG.sceneConfig.screenHeight / 2,
-        //     GAME_CONFIG.sceneConfig.screenWidth, GAME_CONFIG.sceneConfig.screenHeight, 0x0b0815).setDepth(0);
-        // this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 220, GAME_CONFIG.sceneConfig.screenWidth,
-        //     420, 0x161233, 0.85).setDepth(0);
-        // this.scene.add.circle(110, 200, 160, 0x14335b, 0.32).setDepth(0);
-        // this.scene.add.circle(620, 280, 170, 0x5e1944, 0.2).setDepth(0);
-        // this.scene.add.circle(360, 1120, 240, 0x2a143c, 0.16).setDepth(0);
-        // this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 660,
-        //     GAME_CONFIG.sceneConfig.screenWidth - 64, 680, 0xffffff, 0.035).setDepth(1);
-        // this.scene.add.ellipse(GAME_CONFIG.sceneConfig.screenWidth / 2, 914, 240, 46, 0x000000,
-        //     0.28).setDepth(3);
-
         this.spotlightGraphics = this.scene.add.graphics().setDepth(4);
         this.spotlightFrontGlow = this.scene.add.graphics().setDepth(11);
-        this.updateSpotlight(0, 0)
+        this.updateSpotlight(0);
     }
 
-    updateSpotlight(time, deltaTime) {
+    updateSpotlight(time, speed=1) {
         if (!this.scene.hero) return;
 
         const g = this.spotlightGraphics;
@@ -41,9 +29,9 @@ export class Stage extends Phaser.GameObjects.Container {
         const height = GAME_CONFIG.sceneConfig.screenHeight;
         const heroX = this.scene.hero.spineObject.x;
         const heroY = this.scene.hero.spineObject.y;
-        const pulse = (Math.sin(time * 0.0018) + 1) * 0.5;
-        const coneAlpha = 0.10 + pulse * 0.03;
-        const floorAlpha = 0.10 + pulse * 0.04;
+        const pulse = (Math.sin(time * 0.002 * speed) + 1) * 0.5;
+        const coneAlpha = 0.15 + pulse * 0.1;
+        const floorAlpha = 0.15 + pulse * 0.1;
 
         g.clear();
         fg.clear();

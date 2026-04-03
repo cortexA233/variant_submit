@@ -6,6 +6,7 @@ import {GAME_CONFIG} from './config/GameConfig.js';
 import {Vector2} from '@esotericsoftware/spine-phaser-v4';
 import {Stage} from './entities/Stage.js';
 import {PlayerInteractionPage} from './ui/PlayerInteractionPage.js';
+import {StartPage} from './ui/StartPage.js';
 import {GameSceneFSM} from './GameSceneFSM.js';
 import {PROMPTS} from './config/PromptConfig.js';
 import {ANIMATIONS} from './config/AnimationConfig.js';
@@ -36,20 +37,22 @@ export class GameScene extends Phaser.Scene {
     create() {
         this.initializeRunState();
 
-        this.hudPage = new HudPage(this);
+        this.lightShiningSpeed = 1;
+        this.hudPage = null;
         this.resultPage = new ResultPage(this);
-        this.playerInteractionPage = new PlayerInteractionPage(this);
+        this.startPage = new StartPage(this);
+        this.playerInteractionPage = null;
 
         this.hero = new Hero(this, new Vector2(
             GAME_CONFIG.sceneConfig.screenWidth * 0.5,
             GAME_CONFIG.sceneConfig.screenHeight * 0.7
         ));
-        this.stage = new Stage(this);
+        this.stage = null;
         this.stateMachine = new GameSceneFSM(this);
     }
 
     update(time, deltaTime) {
-        this.stage.updateStage(time, deltaTime);
+        this.stage?.updateStage(time, this.lightShiningSpeed);
         this.updatePromptTimer(time);
     }
 
@@ -58,11 +61,11 @@ export class GameScene extends Phaser.Scene {
         this.lastResolution = null;
         this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs;
         this.roundEndsAt = 0;
-        this.promptTimerEvent?.remove?.(false);
+        this.promptTimerEvent?.remove(false);
         this.promptTimerEvent = null;
-        this.resultRevealEvent?.remove?.(false);
+        this.resultRevealEvent?.remove(false);
         this.resultRevealEvent = null;
-        this.feedbackHideEvent?.remove?.(false);
+        this.feedbackHideEvent?.remove(false);
         this.feedbackHideEvent = null;
         this.runState = {
             resolvedRounds: 0,
@@ -77,9 +80,10 @@ export class GameScene extends Phaser.Scene {
         this.initializeRunState();
         this.hero.stateMachine.transitState('Idle');
         this.resultPage.setVisible(false);
+        this.startPage.setVisible(true);
         this.playerInteractionPage?.setPrompt(null);
         this.playerInteractionPage?.setInteractionEnabled(false);
-        this.playerInteractionPage?.showStartPrompt();
+        this.playerInteractionPage?.setChoiceCardsVisible(false);
 
         if (this.hudPage) {
             this.clearFeedbackHideEvent();
@@ -92,12 +96,16 @@ export class GameScene extends Phaser.Scene {
     }
 
     startRunFromBoot() {
+        this.stage = new Stage(this);
+        this.hudPage = new HudPage(this);
+        this.startPage.setVisible(false);
+        this.playerInteractionPage ??= new PlayerInteractionPage(this);
         this.stateMachine.startRun();
     }
 
     enterPromptingState() {
         this.activePrompt = this.createPromptRound();
-        this.playerInteractionPage?.showPromptInstruction();
+        this.playerInteractionPage?.setChoiceCardsVisible(true);
         this.playerInteractionPage?.setPrompt(this.activePrompt);
         this.resultPage.setVisible(false);
         this.startRoundTimer();
@@ -133,8 +141,6 @@ export class GameScene extends Phaser.Scene {
 
         if (timedOut) {
             this.runState.failedByTimeout = true;
-            this.runState.hype = clamp(this.runState.hype - 20, 0, GAME_CONFIG.playerStateConfig.hypeLimit);
-            this.runState.crash = this.runState.crashLimit;
             this.lastResolution = {
                 wasCorrect: false,
                 timedOut: true,
@@ -188,7 +194,7 @@ export class GameScene extends Phaser.Scene {
             baseY: this.hudPage.feedbackTextBaseY ?? this.hudPage.feedbackText.y,
             wasCorrect
         });
-        this.feedbackHideEvent = this.time?.delayedCall?.(
+        this.feedbackHideEvent = this.time.delayedCall(
             GAME_CONFIG.roundConfig.feedbackDisplayDurationMs,
             () => {
                 this.hudPage.feedbackText.setVisible(false);
@@ -219,23 +225,24 @@ export class GameScene extends Phaser.Scene {
         this.playerInteractionPage?.setPrompt(null);
         this.playerInteractionPage?.setInteractionEnabled(false);
         this.setPromptTimerRatio(0);
+        this.lightShiningSpeed = 1;
 
         const { delayMs = 0, ...finalResult } = resultData ?? {};
 
-        this.resultPage?.setVisible(false);
-        this.resultRevealEvent?.remove?.(false);
+        this.resultPage.setVisible(false);
+        this.resultRevealEvent?.remove(false);
         this.resultRevealEvent = null;
 
         if (this.hudPage) {
             this.hudPage.setPromptTimerVisible(false);
         }
 
-        if (delayMs > 0 && this.time?.delayedCall) {
-            this.resultRevealEvent = this.time.delayedCall(delayMs, () => this.resultPage?.showResults(finalResult));
+        if (delayMs > 0 && this.time.delayedCall) {
+            this.resultRevealEvent = this.time.delayedCall(delayMs, () => this.resultPage.showResults(finalResult));
             return;
         }
 
-        this.resultPage?.showResults(finalResult);
+        this.resultPage.showResults(finalResult);
     }
 
     clearFeedbackHideEvent() {
@@ -274,7 +281,8 @@ export class GameScene extends Phaser.Scene {
     startRoundTimer() {
         this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs - this.runState.resolvedRounds
             * GAME_CONFIG.roundConfig.durationDecreaseSpeed;
-        this.currentRoundDuration = Math.max(GAME_CONFIG.roundConfig.minDurationMs, this.currentRoundDuration)
+        this.lightShiningSpeed = Math.pow(GAME_CONFIG.roundConfig.baseDurationMs / this.currentRoundDuration, 2);
+        this.currentRoundDuration = Math.max(GAME_CONFIG.roundConfig.minDurationMs, this.currentRoundDuration);
         this.roundEndsAt = this.time.now + this.currentRoundDuration;
         this.promptTimerEvent?.remove?.(false);
         this.promptTimerEvent = this.time.delayedCall(this.currentRoundDuration, () => this.handlePromptTimeout());
@@ -288,7 +296,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     handlePromptTimeout() {
-        if (!this.activePrompt || this.stateMachine?.currentState?.name !== 'prompting') {
+        if (!this.activePrompt || this.stateMachine.currentState.name !== 'prompting') {
             return;
         }
 

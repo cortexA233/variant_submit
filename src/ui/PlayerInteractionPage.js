@@ -7,9 +7,7 @@ export class PlayerInteractionPage {
         this.activePrompt = null;
         this.isInteractionEnabled = true;
         this.areChoiceCardsVisible = true;
-        this.isStartPromptVisible = false;
         this.buildChoiceCards();
-        this.bindStartTap();
     }
 
     buildChoiceCards() {
@@ -23,32 +21,6 @@ export class PlayerInteractionPage {
             x: 532,
             y: 1098
         });
-
-        this.helperText = this.scene.add
-            .text(
-                GAME_CONFIG.sceneConfig.screenWidth / 2,
-                1220,
-                GAME_CONFIG.uiText.interaction.choiceInstruction,
-                {
-                    fontFamily: 'Georgia',
-                    fontSize: '18px',
-                    color: '#bdb5db'
-                }
-            )
-            .setOrigin(0.5, 0.5)
-            .setDepth(15);
-    }
-
-    bindStartTap() {
-        this.scene.input?.on('pointerdown', this.handleScenePointerDown, this);
-    }
-
-    handleScenePointerDown() {
-        if (!this.isStartPromptVisible) {
-            return;
-        }
-
-        this.scene.startRunFromBoot?.();
     }
 
     createChoiceCard({ side, x, y }) {
@@ -102,21 +74,6 @@ export class PlayerInteractionPage {
         };
     }
 
-    showStartPrompt() {
-        this.isStartPromptVisible = true;
-        this.activePrompt = null;
-        this.setChoiceCardsVisible(false);
-        this.helperText.setText(GAME_CONFIG.uiText.interaction.startInstruction);
-        this.helperText.setFontSize(45);
-    }
-
-    showPromptInstruction() {
-        this.isStartPromptVisible = false;
-        this.setChoiceCardsVisible(true);
-        this.helperText.setText(GAME_CONFIG.uiText.interaction.choiceInstruction);
-        this.helperText.setFontSize(18);
-    }
-
     setChoiceCardsVisible(visible) {
         this.areChoiceCardsVisible = visible;
 
@@ -134,8 +91,8 @@ export class PlayerInteractionPage {
         this.activePrompt = prompt;
 
         for (const [side, card] of Object.entries(this.choiceCards)) {
-            const option = prompt?.options?.find((item) => item.side === side) ?? null;
-            card.labelText.setText(option?.reaction?.label ?? '');
+            const option = prompt?.options.find((item) => item.side === side) ?? null;
+            card.labelText.setText(option?.reaction.label ?? '');
         }
     }
 
@@ -167,7 +124,7 @@ export class PlayerInteractionPage {
             return;
         }
 
-        const option = this.activePrompt?.options?.find((item) => item.side === side) ?? null;
+        const option = this.activePrompt.options.find((item) => item.side === side) ?? null;
 
         if (!option) {
             return;
