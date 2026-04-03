@@ -60,7 +60,7 @@ export class ResultPage {
             .setVisible(false);
 
         this.resultsPrompt = this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 760, 'Tap to go live again.', {
+            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 760, GAME_CONFIG.uiText.result.defaultPrompt, {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '20px',
                 color: '#ffbfd8'
@@ -72,9 +72,9 @@ export class ResultPage {
 
     showResults(resultData = {}) {
         const {
-            headline = 'Set complete',
-            stats = 'Tap to restart.',
-            prompt = 'Tap to go live again.'
+            headline = GAME_CONFIG.uiText.result.defaultHeadline,
+            stats = GAME_CONFIG.uiText.result.defaultStats,
+            prompt = GAME_CONFIG.uiText.result.defaultPrompt
         } = resultData;
 
         this.setVisible(true);

@@ -80,8 +80,8 @@ export class GameScene extends Phaser.Scene {
         this.playerInteractionPage?.showStartPrompt();
 
         if (this.hudPage) {
-            this.hudPage.promptText.setText('');
-            this.hudPage.feedbackText.setText('').setAlpha(0);
+            this.hudPage.promptText.setText(GAME_CONFIG.uiText.scene.emptyPrompt);
+            this.hudPage.feedbackText.setText(GAME_CONFIG.uiText.scene.emptyFeedback).setAlpha(0);
             this.hudPage.setPromptTimerVisible(false);
         }
 
@@ -102,7 +102,7 @@ export class GameScene extends Phaser.Scene {
         if (this.hudPage) {
             this.hudPage.promptText.setText(this.activePrompt.text);
             this.hudPage.feedbackText
-                .setText(this.lastResolution?.feedback ?? '')
+                .setText(this.lastResolution?.feedback ?? GAME_CONFIG.uiText.scene.emptyFeedback)
                 .setAlpha(this.lastResolution ? 1 : 0);
             this.hudPage.setPromptTimerVisible(true);
         }
@@ -132,7 +132,7 @@ export class GameScene extends Phaser.Scene {
             this.lastResolution = {
                 wasCorrect: false,
                 timedOut: true,
-                feedback: 'You missed the cue and froze on stream.'
+                feedback: GAME_CONFIG.uiText.scene.timeoutFeedback
             };
 
             this.hero.stateMachine.transitState('Fail', {isTimeOut: true});
@@ -236,7 +236,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     startRoundTimer() {
-        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs;
+        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs - this.runState.resolvedRounds * 200;
+        this.currentRoundDuration = Math.max(GAME_CONFIG.roundConfig.minDurationMs, this.currentRoundDuration)
         this.roundEndsAt = this.time.now + this.currentRoundDuration;
         this.promptTimerEvent?.remove?.(false);
         this.promptTimerEvent = this.time.delayedCall(this.currentRoundDuration, () => this.handlePromptTimeout());
@@ -333,15 +334,15 @@ export class GameScene extends Phaser.Scene {
 
         return {
             headline: timedOut
-                ? 'You missed the beat and lost the room'
+                ? GAME_CONFIG.uiText.scene.timeoutHeadline
                 : crashedOut
-                    ? 'The crowd turned on your set'
-                    : 'You kept the dance floor alive',
+                    ? GAME_CONFIG.uiText.scene.crashHeadline
+                    : GAME_CONFIG.uiText.scene.successHeadline,
             stats:
-                `Cues cleared: ${this.runState.resolvedRounds}\n` +
-                `Final hype: ${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}\n` +
-                `Crash meter: ${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`,
-            prompt: 'Tap anywhere to go live again.'
+                `${GAME_CONFIG.uiText.scene.resultStatsCuesLabel}: ${this.runState.resolvedRounds}\n` +
+                `${GAME_CONFIG.uiText.scene.resultStatsHypeLabel}: ${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}\n` +
+                `${GAME_CONFIG.uiText.scene.resultStatsCrashLabel}: ${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`,
+            prompt: GAME_CONFIG.uiText.scene.timeoutResultPrompt
         };
     }
 }

@@ -21,7 +21,8 @@ export const GAME_CONFIG = {
         crashFailure: 35
     },
     roundConfig: {
-        baseDurationMs: 4300,
+        baseDurationMs: 4500,
+        minDurationMs: 1500,
         resultDelayMs: 1500,
         urgentTimerThresholdRatio: 0.35,
         minimumTimerFillRatio: 0.02
@@ -40,6 +41,37 @@ export const GAME_CONFIG = {
                 edge: 0xff78be,
                 accent: '#ffd3ea'
             }
+        }
+    },
+    uiText: {
+        hud: {
+            hypeLabel: 'HYPE',
+            crashLabel: 'CRASH',
+            title: 'DANCE LIVE ROOM',
+            subtitle: 'Read the crowd, switch styles, and never miss the beat!'
+        },
+        interaction: {
+            choiceInstruction: 'Tap a card to switch your dance style for the crowd.',
+            startInstruction: 'Tap anywhere to start',
+            leftKeyLabel: 'LEFT',
+            rightKeyLabel: 'RIGHT'
+        },
+        scene: {
+            emptyPrompt: '',
+            emptyFeedback: '',
+            timeoutFeedback: 'You missed the cue and froze on stream.',
+            timeoutResultPrompt: 'Tap anywhere to go live again.',
+            timeoutHeadline: 'You missed the beat and lost the room',
+            crashHeadline: 'The crowd turned on your set',
+            successHeadline: 'You kept the dance floor alive',
+            resultStatsCuesLabel: 'Cues cleared',
+            resultStatsHypeLabel: 'Final hype',
+            resultStatsCrashLabel: 'Crash meter'
+        },
+        result: {
+            defaultHeadline: 'Set complete',
+            defaultStats: 'Tap to restart.',
+            defaultPrompt: 'Tap to go live again.'
         }
     }
 };

@@ -28,7 +28,7 @@ export class PlayerInteractionPage {
             .text(
                 GAME_CONFIG.sceneConfig.screenWidth / 2,
                 1220,
-                'Tap a card to switch your dance style for the crowd.',
+                GAME_CONFIG.uiText.interaction.choiceInstruction,
                 {
                     fontFamily: 'Georgia',
                     fontSize: '18px',
@@ -69,7 +69,9 @@ export class PlayerInteractionPage {
         });
 
         const keyText = this.scene.add
-            .text(x, y - 44, side === 'left' ? 'LEFT' : 'RIGHT', {
+            .text(x, y - 44, side === 'left'
+                ? GAME_CONFIG.uiText.interaction.leftKeyLabel
+                : GAME_CONFIG.uiText.interaction.rightKeyLabel, {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '18px',
                 fontStyle: 'bold',
@@ -104,14 +106,14 @@ export class PlayerInteractionPage {
         this.isStartPromptVisible = true;
         this.activePrompt = null;
         this.setChoiceCardsVisible(false);
-        this.helperText.setText('Tap anywhere to start');
+        this.helperText.setText(GAME_CONFIG.uiText.interaction.startInstruction);
         this.helperText.setFontSize(45);
     }
 
     showPromptInstruction() {
         this.isStartPromptVisible = false;
         this.setChoiceCardsVisible(true);
-        this.helperText.setText('Tap a card to switch your dance style for the crowd.');
+        this.helperText.setText(GAME_CONFIG.uiText.interaction.choiceInstruction);
         this.helperText.setFontSize(18);
     }
 

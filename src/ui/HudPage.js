@@ -10,7 +10,7 @@ export class HudPage {
 
     buildPlayerStatus() {
         this.scene.add
-            .text(56, 78, 'HYPE', {
+            .text(56, 78, GAME_CONFIG.uiText.hud.hypeLabel, {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '16px',
                 fontStyle: 'bold',
@@ -18,7 +18,7 @@ export class HudPage {
             })
             .setDepth(6);
         this.scene.add
-            .text(56, 118, 'CRASH', {
+            .text(56, 118, GAME_CONFIG.uiText.hud.crashLabel, {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '16px',
                 fontStyle: 'bold',
@@ -58,7 +58,7 @@ export class HudPage {
         ).setDepth(5);
         this.scene.add.circle(55, 350, 7, 0xff5e7c).setDepth(6);
         this.scene.add
-            .text(70, 335, 'DANCE LIVE ROOM', {
+            .text(70, 335, GAME_CONFIG.uiText.hud.title, {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '26px',
                 fontStyle: 'bold',
@@ -67,7 +67,7 @@ export class HudPage {
             .setDepth(6);
         this.scene.add
             .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 40,
-                'Read the crowd, switch styles, and never miss the beat!', {
+                GAME_CONFIG.uiText.hud.subtitle, {
                 fontFamily: 'Georgia',
                 fontSize: '19px',
                 color: '#bdb5db'
