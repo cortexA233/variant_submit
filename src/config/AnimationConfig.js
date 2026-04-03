@@ -18,8 +18,8 @@ export const ANIMATIONS = {
         animation: 'TikTokDance2',
         resultType: 'dance'
     },
-    silkWave: {
-        id: 'silkWave',
+    classical: {
+        id: 'classical',
         label: 'Silk Wave',
         animation: 'IndianClassicalDance',
         resultType: 'dance'
@@ -30,8 +30,8 @@ export const ANIMATIONS = {
         animation: 'DanceWithMic',
         resultType: 'dance'
     },
-    bollyBeat: {
-        id: 'bollyBeat',
+    punjabi: {
+        id: 'punjabi',
         label: 'Bolly Beat',
         animation: 'PunjabiDance',
         resultType: 'dance'

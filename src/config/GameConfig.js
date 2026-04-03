@@ -53,7 +53,7 @@ export const GAME_CONFIG = {
             subtitle: 'Read the crowd, switch styles, and never miss the beat!'
         },
         start: {
-            topInstruction: 'Read the crowds\' cue,\r tap the left or right style card to change your dance. ' +
+            topInstruction: 'Read the crowd\'s cue,\r tap the left or right style card to change your dance. ' +
                 '\rDon\'t let the timer run out!',
             startInstruction: 'Tap anywhere to start'
         },

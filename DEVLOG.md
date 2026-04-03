@@ -7,7 +7,7 @@
 * start to do some playground and experiment stuff with Phaser.
 ### 2026/4/1 10pm
 * Began to implement.
-### 2026/4/2 12pm
+### 2026/4/3 11am
 * Submitted.
 
 

@@ -13,15 +13,15 @@ export const PROMPTS = [
         id: 'raise-the-heat',
         text: 'They want to feel louder!',
         correctReactionIds: ['rrrRush', 'streetGroove'],
-        decoyReactionIds: ['silkWave', 'stageStrut', 'bollyBeat'],
+        decoyReactionIds: ['classical', 'stageStrut', 'punjabi'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'soften-the-mood',
         text: 'Something softer.',
-        correctReactionIds: ['silkWave'],
-        decoyReactionIds: ['rrrRush', 'bollyBeat', 'streetGroove'],
+        correctReactionIds: ['classical'],
+        decoyReactionIds: ['rrrRush', 'punjabi', 'streetGroove'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
     },
@@ -29,22 +29,22 @@ export const PROMPTS = [
         id: 'keep-it-clip-worthy',
         text: 'A polished switch, ready to be clip.',
         correctReactionIds: ['stageStrut', 'neonBounce'],
-        decoyReactionIds: ['bollyBeat', 'rrrRush', 'silkWave'],
+        decoyReactionIds: ['punjabi', 'rrrRush', 'classical'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'bring-the-bounce',
         text: 'Something springy and bouncy!',
-        correctReactionIds: ['streetGroove', 'bollyBeat'],
-        decoyReactionIds: ['silkWave', 'stageStrut', 'rrrRush'],
+        correctReactionIds: ['streetGroove', 'punjabi'],
+        decoyReactionIds: ['classical', 'stageStrut', 'rrrRush'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'give-it-roots',
         text: 'Next move to feel richer and rooted.',
-        correctReactionIds: ['bollyBeat', 'silkWave'],
+        correctReactionIds: ['punjabi', 'classical'],
         decoyReactionIds: ['neonBounce', 'rrrRush', 'stageStrut'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
@@ -53,7 +53,7 @@ export const PROMPTS = [
         id: 'go-bigger',
         text: 'A more explosive switch!',
         correctReactionIds: ['rrrRush', 'stageStrut'],
-        decoyReactionIds: ['silkWave', 'streetGroove', 'neonBounce'],
+        decoyReactionIds: ['classical', 'streetGroove', 'neonBounce'],
         successCommentBursts: SUCCESS_COMMENT_BURSTS,
         failCommentBursts: FAIL_COMMENT_BURSTS
     }
