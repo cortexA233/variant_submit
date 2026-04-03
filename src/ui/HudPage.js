@@ -44,6 +44,20 @@ export class HudPage {
                 color: '#fff3f8'
             })
             .setDepth(7);
+        this.comboText = this.scene.add
+            .text(GAME_CONFIG.sceneConfig.screenWidth - 56, 555, '', {
+                fontFamily: 'Trebuchet MS',
+                fontSize: '32px',
+                fontStyle: 'bold',
+                color: '#ffe27a',
+                stroke: '#25140c',
+                strokeThickness: 6
+            })
+            .setOrigin(1, 0.5)
+            .setDepth(8)
+            .setAlpha(0)
+            .setVisible(false);
+        this.comboTextBaseY = this.comboText.y;
     }
 
     buildHudPage() {

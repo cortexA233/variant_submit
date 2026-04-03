@@ -10,8 +10,11 @@ import {StartPage} from './ui/StartPage.js';
 import {GameSceneFSM} from './GameSceneFSM.js';
 import {PROMPTS} from './config/PromptConfig.js';
 import {ANIMATIONS} from './config/AnimationConfig.js';
-import {NOISE_LIBRARY} from './config/NoiseConfig.js';
-import {playFeedbackTextMotion, resetFeedbackTextMotion} from './ui/feedbackTextMotion.js';
+import {
+    playComboTextMotion,
+    playFeedbackTextMotion,
+    resetTextMotion,
+} from './ui/feedbackTextMotion.js';
 
 const HUD_BAR_WIDTH = 250;
 
@@ -69,6 +72,7 @@ export class GameScene extends Phaser.Scene {
         this.feedbackHideEvent = null;
         this.runState = {
             resolvedRounds: 0,
+            comboCount: 0,
             hype: GAME_CONFIG.playerStateConfig.initialHype,
             crash: GAME_CONFIG.playerStateConfig.initialCrash,
             crashLimit: GAME_CONFIG.playerStateConfig.crashLimit,
@@ -141,6 +145,7 @@ export class GameScene extends Phaser.Scene {
 
         if (timedOut) {
             this.runState.failedByTimeout = true;
+            this.runState.comboCount = 0;
             this.lastResolution = {
                 wasCorrect: false,
                 timedOut: true,
@@ -166,6 +171,7 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.runState.failedByTimeout = false;
+        this.runState.comboCount = wasCorrect ? this.runState.comboCount + 1 : 0;
         this.runState.hype = clamp(
             this.runState.hype + (wasCorrect ? GAME_CONFIG.playerStateConfig.hypeSuccess : GAME_CONFIG.playerStateConfig.hypeFailure),
             0,
@@ -202,7 +208,7 @@ export class GameScene extends Phaser.Scene {
             }
         ) ?? null;
 
-        this.updateHud();
+        this.updateHud({ animateCombo: wasCorrect });
 
         if (this.runState.crash >= this.runState.crashLimit) {
             this.hero.stateMachine.transitState('Fail', {isTimeOut: false});
@@ -251,12 +257,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     resetFeedbackTextDisplay(text, alpha = 1, visible = true) {
-        if (!this.hudPage?.feedbackText) {
-            return;
-        }
-
         this.tweens?.killTweensOf?.(this.hudPage.feedbackText);
-        resetFeedbackTextMotion(
+        resetTextMotion(
             this.hudPage.feedbackText,
             this.hudPage.feedbackTextBaseY ?? this.hudPage.feedbackText.y
         );
@@ -264,6 +266,32 @@ export class GameScene extends Phaser.Scene {
             .setText(text)
             .setAlpha(alpha)
             .setVisible(visible);
+    }
+
+    resetComboTextDisplay(text, alpha = 1, visible = true) {
+        this.hudPage.comboText
+            .setText(text)
+            .setAlpha(alpha)
+            .setVisible(visible);
+    }
+
+    updateComboHud({ animate = false } = {}) {
+        if (this.runState.comboCount < 2) {
+            this.resetComboTextDisplay('', 0, false);
+            return;
+        }
+
+        const comboLabel = `${this.runState.comboCount} COMBO`;
+
+        this.resetComboTextDisplay(comboLabel, 1, true);
+        if (animate) {
+            playComboTextMotion({
+                comboText: this.hudPage.comboText,
+                tweens: this.tweens,
+                baseY: this.hudPage.comboTextBaseY ?? this.hudPage.comboText.y
+            });
+        }
+
     }
 
     setInteractionEnabled(enabled) {
@@ -357,7 +385,7 @@ export class GameScene extends Phaser.Scene {
         );
     }
 
-    updateHud() {
+    updateHud({ animateCombo = false } = {}) {
         if (!this.hudPage) {
             return;
         }
@@ -369,6 +397,7 @@ export class GameScene extends Phaser.Scene {
         this.hudPage.crashFill.width = HUD_BAR_WIDTH * crashRatio;
         this.hudPage.hypeValueText.setText(`${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}`);
         this.hudPage.crashValueText.setText(`${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`);
+        this.updateComboHud({ animate: animateCombo && this.runState.comboCount >= 2 });
     }
 
     buildResultData() {
