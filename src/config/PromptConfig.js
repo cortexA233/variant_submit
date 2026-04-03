@@ -1,50 +1,60 @@
+const SUCCESS_COMMENT_BURSTS = [
+    'That switch landed!',
+    'The crowd is with you!'
+];
+
+const FAIL_COMMENT_BURSTS = [
+    'That missed the cue...',
+    'The room felt that flop...'
+];
+
 export const PROMPTS = [
     {
         id: 'raise-the-heat',
-        text: 'The chat wants this switch to hit harder and feel louder.',
+        text: 'They want to feel louder!',
         correctReactionIds: ['rrrRush', 'streetGroove'],
         decoyReactionIds: ['silkWave', 'stageStrut', 'bollyBeat'],
-        successCommentBursts: ['That switch hit the drop', 'Crowd felt that instantly', 'Now the room is moving'],
-        failCommentBursts: ['That killed the build', 'Wrong temperature for the moment', 'Chat wanted more impact']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'soften-the-mood',
-        text: 'This cue needs something softer, smoother, and more graceful.',
+        text: 'Something softer, smoother, and more graceful.',
         correctReactionIds: ['silkWave'],
         decoyReactionIds: ['rrrRush', 'bollyBeat', 'streetGroove'],
-        successCommentBursts: ['That glide was perfect', 'The mood snapped into place', 'Clean, soft, and on cue'],
-        failCommentBursts: ['Too rough for that cue', 'The vibe just got heavier', 'Chat wanted something gentler']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'keep-it-clip-worthy',
-        text: 'The room wants a polished, camera-ready switch they can clip.',
+        text: 'A polished camera-ready switch, ready to be clip.',
         correctReactionIds: ['stageStrut', 'neonBounce'],
         decoyReactionIds: ['bollyBeat', 'rrrRush', 'silkWave'],
-        successCommentBursts: ['That looked made for the feed', 'Clip farmers just woke up', 'Camera-ready move right there'],
-        failCommentBursts: ['That was not the glam pick', 'Too messy for this moment', 'Chat wanted more polish']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'bring-the-bounce',
-        text: 'Viewers are asking for something springy, playful, and bouncy.',
+        text: 'They need something springy and bouncy.',
         correctReactionIds: ['streetGroove', 'bollyBeat'],
         decoyReactionIds: ['silkWave', 'stageStrut', 'rrrRush'],
-        successCommentBursts: ['That bounce woke the room up', 'Now the crowd is smiling', 'Playful was the right call'],
-        failCommentBursts: ['That felt too stiff', 'The bounce never showed up', 'Chat asked for lighter footwork']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'give-it-roots',
-        text: 'The audience wants the next move to feel richer and more rooted.',
+        text: 'Next move to feel richer and more rooted.',
         correctReactionIds: ['bollyBeat', 'silkWave'],
         decoyReactionIds: ['neonBounce', 'rrrRush', 'stageStrut'],
-        successCommentBursts: ['That flavor landed beautifully', 'Crowd loved the texture there', 'That felt grounded and rich'],
-        failCommentBursts: ['That missed the flavor entirely', 'Too synthetic for that cue', 'Chat wanted more character']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     },
     {
         id: 'go-bigger',
-        text: 'This beat drop needs a bigger, more explosive switch.',
+        text: 'A more explosive switch!',
         correctReactionIds: ['rrrRush', 'stageStrut'],
         decoyReactionIds: ['silkWave', 'streetGroove', 'neonBounce'],
-        successCommentBursts: ['That filled the whole screen', 'Huge switch for a huge moment', 'The crowd ate that up'],
-        failCommentBursts: ['That played too small', 'The drop needed more stage presence', 'Chat wanted something bigger']
+        successCommentBursts: SUCCESS_COMMENT_BURSTS,
+        failCommentBursts: FAIL_COMMENT_BURSTS
     }
 ];

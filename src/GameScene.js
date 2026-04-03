@@ -53,7 +53,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     initializeRunState() {
-        this.promptIndex = 0;
         this.activePrompt = null;
         this.lastResolution = null;
         this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs;
@@ -132,7 +131,7 @@ export class GameScene extends Phaser.Scene {
             this.lastResolution = {
                 wasCorrect: false,
                 timedOut: true,
-                feedback: GAME_CONFIG.uiText.scene.timeoutFeedback
+                feedback: GAME_CONFIG.uiText.scene.emptyFeedback
             };
 
             this.hero.stateMachine.transitState('Fail', {isTimeOut: true});
@@ -236,7 +235,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     startRoundTimer() {
-        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs - this.runState.resolvedRounds * 200;
+        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs - this.runState.resolvedRounds
+            * GAME_CONFIG.roundConfig.durationDecreaseSpeed;
         this.currentRoundDuration = Math.max(GAME_CONFIG.roundConfig.minDurationMs, this.currentRoundDuration)
         this.roundEndsAt = this.time.now + this.currentRoundDuration;
         this.promptTimerEvent?.remove?.(false);
@@ -263,13 +263,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     createPromptRound() {
-        const prompt = PROMPTS[this.promptIndex % PROMPTS.length];
-        const promptOrder = this.promptIndex;
+        const randomPromptIndex = Math.floor(Math.random() * PROMPTS.length)
+        const prompt = PROMPTS[randomPromptIndex];
         const correctReactionId = prompt.correctReactionIds[0];
         const decoyReactionId = prompt.decoyReactionIds[0];
-        const showCorrectOnLeft = promptOrder % 2 === 0;
-
-        this.promptIndex += 1;
+        const showCorrectOnLeft = Math.random() > 0.5;
 
         return {
             ...prompt,
@@ -330,14 +328,11 @@ export class GameScene extends Phaser.Scene {
 
     buildResultData() {
         const timedOut = this.runState.failedByTimeout;
-        const crashedOut = !timedOut && this.runState.crash >= this.runState.crashLimit;
 
         return {
             headline: timedOut
                 ? GAME_CONFIG.uiText.scene.timeoutHeadline
-                : crashedOut
-                    ? GAME_CONFIG.uiText.scene.crashHeadline
-                    : GAME_CONFIG.uiText.scene.successHeadline,
+                : GAME_CONFIG.uiText.scene.crashHeadline,
             stats:
                 `${GAME_CONFIG.uiText.scene.resultStatsCuesLabel}: ${this.runState.resolvedRounds}\n` +
                 `${GAME_CONFIG.uiText.scene.resultStatsHypeLabel}: ${Math.round(this.runState.hype)} / ${GAME_CONFIG.playerStateConfig.hypeLimit}\n` +

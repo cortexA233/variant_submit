@@ -51,6 +51,7 @@ class GameSceneBootState extends GameSceneBaseState {
 
     startRun() {
         this.stateMachine.transitState(new GameScenePromptingState(this.scene, this.stateMachine));
+        this.scene.hero.stateMachine.transitState('Reaction', {animationKey: 'streetGroove'});
     }
 }
 

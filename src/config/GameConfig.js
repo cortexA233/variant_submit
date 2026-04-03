@@ -22,6 +22,7 @@ export const GAME_CONFIG = {
     },
     roundConfig: {
         baseDurationMs: 4500,
+        durationDecreaseSpeed: 100,
         minDurationMs: 1500,
         resultDelayMs: 1500,
         urgentTimerThresholdRatio: 0.35,
@@ -59,11 +60,9 @@ export const GAME_CONFIG = {
         scene: {
             emptyPrompt: '',
             emptyFeedback: '',
-            timeoutFeedback: 'You missed the cue and froze on stream.',
             timeoutResultPrompt: 'Tap anywhere to go live again.',
-            timeoutHeadline: 'You missed the beat and lost the room',
-            crashHeadline: 'The crowd turned on your set',
-            successHeadline: 'You kept the dance floor alive',
+            timeoutHeadline: 'You missed the beat',
+            crashHeadline: 'You crashed because of too much failure',
             resultStatsCuesLabel: 'Cues cleared',
             resultStatsHypeLabel: 'Final hype',
             resultStatsCrashLabel: 'Crash meter'

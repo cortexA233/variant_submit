@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import {GAME_CONFIG} from '../config/GameConfig.js';
 
 export class HudPage {
@@ -104,7 +103,7 @@ export class HudPage {
             .setDepth(9);
 
         this.feedbackText = this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 366, '', {
+            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 399, '', {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '28px',
                 fontStyle: 'bold',
