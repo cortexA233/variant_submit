@@ -104,7 +104,8 @@ export class GameScene extends Phaser.Scene {
         this.hudPage = new HudPage(this);
         this.startPage.setVisible(false);
         this.playerInteractionPage ??= new PlayerInteractionPage(this);
-        this.stateMachine.startRun();
+        this.stateMachine.transitState('Prompting');
+        this.hero.stateMachine.transitState('Reaction', { animationKey: 'streetGroove' });
     }
 
     enterPromptingState() {
@@ -132,7 +133,7 @@ export class GameScene extends Phaser.Scene {
         this.clearFeedbackHideEvent();
 
         if (!option || !this.activePrompt) {
-            return { nextState: 'prompting' };
+            return { nextState: 'Prompting' };
         }
 
         const timedOut = Boolean(option.timedOut);
@@ -162,7 +163,7 @@ export class GameScene extends Phaser.Scene {
             this.updateHud();
 
             return {
-                nextState: 'result',
+                nextState: 'Result',
                 result: {
                     ...this.buildResultData(),
                     delayMs: GAME_CONFIG.roundConfig.resultDelayMs
@@ -213,7 +214,7 @@ export class GameScene extends Phaser.Scene {
         if (this.runState.crash >= this.runState.crashLimit) {
             this.hero.stateMachine.transitState('Fail', {isTimeOut: false});
             return {
-                nextState: 'result',
+                nextState: 'Result',
                 result: {
                     ...this.buildResultData(),
                     delayMs: GAME_CONFIG.roundConfig.resultDelayMs,
@@ -221,7 +222,7 @@ export class GameScene extends Phaser.Scene {
             };
         }
 
-        return { nextState: 'prompting' };
+        return { nextState: 'Prompting' };
     }
 
     enterResultState(resultData) {
@@ -299,7 +300,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     resolveRound(option) {
-        this.stateMachine.resolveRound(option);
+        this.stateMachine.transitState('Resolving', { option });
     }
 
     restartRun() {
@@ -324,7 +325,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     handlePromptTimeout() {
-        if (!this.activePrompt || this.stateMachine.currentState.name !== 'prompting') {
+        if (!this.activePrompt || this.stateMachine.currentStateKey !== 'Prompting') {
             return;
         }
 
@@ -358,7 +359,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     updatePromptTimer(time) {
-        if (!this.hudPage?.promptTimerFill || this.stateMachine?.currentState?.name !== 'prompting') {
+        if (!this.hudPage?.promptTimerFill || this.stateMachine?.currentStateKey !== 'Prompting') {
             return;
         }
 
@@ -415,3 +416,4 @@ export class GameScene extends Phaser.Scene {
         };
     }
 }
+

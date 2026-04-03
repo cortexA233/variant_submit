@@ -124,7 +124,7 @@ export class PlayerInteractionPage {
             return;
         }
 
-        const option = this.activePrompt.options.find((item) => item.side === side) ?? null;
+        const option = this.activePrompt?.options.find((item) => item.side === side) ?? null;
 
         if (!option) {
             return;

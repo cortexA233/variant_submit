@@ -2,21 +2,20 @@ export class GameSceneFSM {
     constructor(scene, params = {}) {
         this.scene = scene;
         this.currentState = null;
-        this.transitState(new GameSceneBootState(scene, this), params);
+        this.currentStateKey = null;
+        this.transitState('Boot', params);
     }
 
-    transitState(newState, params = {}) {
+    transitState(stateKey, params = {}) {
+        const StateClass = GAME_SCENE_STATE_MAP[stateKey];
+        if (!StateClass) {
+            throw new Error(`Unknown state: ${stateKey}`);
+        }
+
         this.currentState?.exitState();
-        this.currentState = newState;
+        this.currentStateKey = stateKey;
+        this.currentState = new StateClass(this.scene, this);
         this.currentState.enterState(params);
-    }
-
-    startRun() {
-        this.currentState.startRun();
-    }
-
-    resolveRound(option) {
-        this.currentState.resolveRound(option);
     }
 
     destroy() {}
@@ -45,11 +44,6 @@ class GameSceneBootState extends GameSceneBaseState {
     enterState(params = {}) {
         this.scene.enterBootState(params);
     }
-
-    startRun() {
-        this.stateMachine.transitState(new GameScenePromptingState(this.scene, this.stateMachine));
-        this.scene.hero.stateMachine.transitState('Reaction', {animationKey: 'streetGroove'});
-    }
 }
 
 class GameScenePromptingState extends GameSceneBaseState {
@@ -61,10 +55,6 @@ class GameScenePromptingState extends GameSceneBaseState {
     enterState(params = {}) {
         this.scene.setInteractionEnabled(true);
         this.scene.enterPromptingState(params);
-    }
-
-    resolveRound(option) {
-        this.stateMachine.transitState(new GameSceneResolvingState(this.scene, this.stateMachine), { option });
     }
 }
 
@@ -79,16 +69,16 @@ class GameSceneResolvingState extends GameSceneBaseState {
 
         this.scene.setInteractionEnabled(false);
 
-        const outcome = this.scene.enterResolvingState(option) ?? { nextState: 'prompting' };
+        const outcome = this.scene.enterResolvingState(option) ?? { nextState: 'Prompting' };
 
-        if (outcome.nextState === 'result') {
-            this.stateMachine.transitState(new GameSceneResultState(this.scene, this.stateMachine), {
+        if (outcome.nextState === 'Result') {
+            this.stateMachine.transitState(outcome.nextState, {
                 result: outcome.result
             });
             return;
         }
 
-        this.stateMachine.transitState(new GameScenePromptingState(this.scene, this.stateMachine), outcome);
+        this.stateMachine.transitState(outcome.nextState, outcome);
     }
 }
 
@@ -102,3 +92,10 @@ class GameSceneResultState extends GameSceneBaseState {
         this.scene.enterResultState(params.result ?? null);
     }
 }
+
+export const GAME_SCENE_STATE_MAP = {
+    Boot: GameSceneBootState,
+    Prompting: GameScenePromptingState,
+    Resolving: GameSceneResolvingState,
+    Result: GameSceneResultState
+};
