@@ -114,6 +114,7 @@ export class HudPage {
             .setOrigin(0.5, 0.5)
             .setDepth(24)
             .setAlpha(0);
+        this.feedbackTextBaseY = this.feedbackText.y;
     }
 
     setPromptTimerVisible(visible) {

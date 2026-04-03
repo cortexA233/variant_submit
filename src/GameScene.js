@@ -10,6 +10,7 @@ import {GameSceneFSM} from './GameSceneFSM.js';
 import {PROMPTS} from './config/PromptConfig.js';
 import {ANIMATIONS} from './config/AnimationConfig.js';
 import {NOISE_LIBRARY} from './config/NoiseConfig.js';
+import {playFeedbackTextMotion, resetFeedbackTextMotion} from './ui/feedbackTextMotion.js';
 
 const HUD_BAR_WIDTH = 250;
 
@@ -61,6 +62,8 @@ export class GameScene extends Phaser.Scene {
         this.promptTimerEvent = null;
         this.resultRevealEvent?.remove?.(false);
         this.resultRevealEvent = null;
+        this.feedbackHideEvent?.remove?.(false);
+        this.feedbackHideEvent = null;
         this.runState = {
             resolvedRounds: 0,
             hype: GAME_CONFIG.playerStateConfig.initialHype,
@@ -79,8 +82,9 @@ export class GameScene extends Phaser.Scene {
         this.playerInteractionPage?.showStartPrompt();
 
         if (this.hudPage) {
+            this.clearFeedbackHideEvent();
             this.hudPage.promptText.setText(GAME_CONFIG.uiText.scene.emptyPrompt);
-            this.hudPage.feedbackText.setText(GAME_CONFIG.uiText.scene.emptyFeedback).setAlpha(0);
+            this.resetFeedbackTextDisplay(GAME_CONFIG.uiText.scene.emptyFeedback, 0, false);
             this.hudPage.setPromptTimerVisible(false);
         }
 
@@ -100,9 +104,11 @@ export class GameScene extends Phaser.Scene {
 
         if (this.hudPage) {
             this.hudPage.promptText.setText(this.activePrompt.text);
+            const hasLastResolution = Boolean(this.lastResolution);
             this.hudPage.feedbackText
                 .setText(this.lastResolution?.feedback ?? GAME_CONFIG.uiText.scene.emptyFeedback)
-                .setAlpha(this.lastResolution ? 1 : 0);
+                .setAlpha(hasLastResolution ? 1 : 0)
+                .setVisible(hasLastResolution);
             this.hudPage.setPromptTimerVisible(true);
         }
 
@@ -111,6 +117,7 @@ export class GameScene extends Phaser.Scene {
 
     enterResolvingState(option) {
         this.clearRoundTimer();
+        this.clearFeedbackHideEvent();
 
         if (!option || !this.activePrompt) {
             return { nextState: 'prompting' };
@@ -138,10 +145,8 @@ export class GameScene extends Phaser.Scene {
             this.activePrompt = null;
 
             if (this.hudPage) {
-                this.hudPage.feedbackText
-                    .setText(this.lastResolution.feedback)
-                    .setAlpha(1);
-                }
+                this.resetFeedbackTextDisplay(this.lastResolution.feedback, 1, true);
+            }
 
             this.updateHud();
 
@@ -175,11 +180,21 @@ export class GameScene extends Phaser.Scene {
             animationKey: option.reactionId
         });
 
-        if (this.hudPage) {
-            this.hudPage.feedbackText
-                .setText(this.lastResolution.feedback)
-                .setAlpha(1);
-        }
+        this.hudPage.feedbackText
+            .setText(this.lastResolution.feedback);
+        playFeedbackTextMotion({
+            feedbackText: this.hudPage.feedbackText,
+            tweens: this.tweens,
+            baseY: this.hudPage.feedbackTextBaseY ?? this.hudPage.feedbackText.y,
+            wasCorrect
+        });
+        this.feedbackHideEvent = this.time?.delayedCall?.(
+            GAME_CONFIG.roundConfig.feedbackDisplayDurationMs,
+            () => {
+                this.hudPage.feedbackText.setVisible(false);
+                this.feedbackHideEvent = null;
+            }
+        ) ?? null;
 
         this.updateHud();
 
@@ -199,6 +214,7 @@ export class GameScene extends Phaser.Scene {
 
     enterResultState(resultData) {
         this.clearRoundTimer();
+        this.clearFeedbackHideEvent();
         this.activePrompt = null;
         this.playerInteractionPage?.setPrompt(null);
         this.playerInteractionPage?.setInteractionEnabled(false);
@@ -220,6 +236,27 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.resultPage?.showResults(finalResult);
+    }
+
+    clearFeedbackHideEvent() {
+        this.feedbackHideEvent?.remove?.(false);
+        this.feedbackHideEvent = null;
+    }
+
+    resetFeedbackTextDisplay(text, alpha = 1, visible = true) {
+        if (!this.hudPage?.feedbackText) {
+            return;
+        }
+
+        this.tweens?.killTweensOf?.(this.hudPage.feedbackText);
+        resetFeedbackTextMotion(
+            this.hudPage.feedbackText,
+            this.hudPage.feedbackTextBaseY ?? this.hudPage.feedbackText.y
+        );
+        this.hudPage.feedbackText
+            .setText(text)
+            .setAlpha(alpha)
+            .setVisible(visible);
     }
 
     setInteractionEnabled(enabled) {

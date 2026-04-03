@@ -25,6 +25,7 @@ export const GAME_CONFIG = {
         durationDecreaseSpeed: 100,
         minDurationMs: 1500,
         resultDelayMs: 1500,
+        feedbackDisplayDurationMs: 1500,
         urgentTimerThresholdRatio: 0.35,
         minimumTimerFillRatio: 0.02
     },
