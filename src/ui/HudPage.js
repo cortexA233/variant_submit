@@ -1,6 +1,5 @@
-import Phaser from "phaser";
-import {GAME_CONFIG} from "../config/GameConfig.js";
-
+import Phaser from 'phaser';
+import {GAME_CONFIG} from '../config/GameConfig.js';
 
 export class HudPage {
     constructor(scene) {
@@ -46,14 +45,20 @@ export class HudPage {
                 color: '#fff3f8'
             })
             .setDepth(7);
-
     }
-    
+
     buildHudPage() {
-        this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 86, GAME_CONFIG.sceneConfig.screenWidth - 48, 128, 0x110f22, 0.9).setDepth(5);
+        this.scene.add.rectangle(
+            GAME_CONFIG.sceneConfig.screenWidth / 2,
+            86,
+            GAME_CONFIG.sceneConfig.screenWidth - 48,
+            128,
+            0x110f22,
+            0.9
+        ).setDepth(5);
         this.scene.add.circle(72, 52, 7, 0xff5e7c).setDepth(6);
         this.scene.add
-            .text(88, 38, 'LIVE FAIL STREAM', {
+            .text(88, 38, 'DANCE LIVE ROOM', {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '26px',
                 fontStyle: 'bold',
@@ -61,7 +66,7 @@ export class HudPage {
             })
             .setDepth(6);
         this.scene.add
-            .text(666, 40, 'Hold your HYPE and avoid to increase CRASH!', {
+            .text(666, 40, 'Read the crowd, switch styles, and never miss the drop.', {
                 fontFamily: 'Georgia',
                 fontSize: '16px',
                 color: '#bdb5db'
@@ -69,8 +74,14 @@ export class HudPage {
             .setOrigin(1, 0)
             .setDepth(6);
 
-        this.promptBanner = this.scene.add.rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, 212,
-            GAME_CONFIG.sceneConfig.screenWidth - 88, 92, 0x1a1732, 0.95).setDepth(8);
+        this.promptBanner = this.scene.add.rectangle(
+            GAME_CONFIG.sceneConfig.screenWidth / 2,
+            212,
+            GAME_CONFIG.sceneConfig.screenWidth - 88,
+            92,
+            0x1a1732,
+            0.95
+        ).setDepth(8);
         this.promptBanner.setStrokeStyle(2, 0x786dcb, 0.9);
         this.promptText = this.scene.add
             .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 196, '', {
@@ -94,8 +105,11 @@ export class HudPage {
             .setOrigin(0.5, 0.5)
             .setDepth(9);
 
-        this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x231f3d, 0.8).setOrigin(0, 0.5).setDepth(8);
-        this.promptTimerFill = this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x6effbf, 1).setOrigin(0, 0.5).setDepth(9);
+        this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x231f3d, 0.8)
+            .setOrigin(0, 0.5).setDepth(8);
+        this.promptTimerFill = this.scene.add.rectangle(100, 250, GAME_CONFIG.sceneConfig.screenWidth - 200, 10, 0x6effbf, 1)
+            .setOrigin(0, 0.5)
+            .setDepth(9);
 
         this.feedbackText = this.scene.add
             .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 366, '', {

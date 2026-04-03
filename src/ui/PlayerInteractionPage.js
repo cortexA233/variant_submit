@@ -1,7 +1,6 @@
-import {GAME_CONFIG} from "../config/GameConfig.js";
+import {GAME_CONFIG} from '../config/GameConfig.js';
 
-
-export class PlayerInteractionPage{
+export class PlayerInteractionPage {
     constructor(scene) {
         this.scene = scene;
         this.choiceCards = {};
@@ -23,12 +22,16 @@ export class PlayerInteractionPage{
         });
 
         this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 1220, 
-                'Tap a card to decide what to do for your audience!', {
-                fontFamily: 'Georgia',
-                fontSize: '18px',
-                color: '#bdb5db'
-            })
+            .text(
+                GAME_CONFIG.sceneConfig.screenWidth / 2,
+                1220,
+                'Tap a card to switch your dance style for the crowd.',
+                {
+                    fontFamily: 'Georgia',
+                    fontSize: '18px',
+                    color: '#bdb5db'
+                }
+            )
             .setOrigin(0.5, 0.5)
             .setDepth(15);
     }

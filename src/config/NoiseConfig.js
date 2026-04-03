@@ -1,23 +1,23 @@
 export const NOISE_LIBRARY = {
     positiveComments: [
-        'W chat',
-        'That landed',
-        'Streamer aura',
-        'Main character energy',
-        'Replay that immediately'
+        'That groove landed',
+        'Crowd found the beat',
+        'Replay that footwork',
+        'The room is locked in',
+        'That switch was clean'
     ],
     negativeComments: [
-        'This is painful',
-        'Nooo',
-        'Career ending stream',
-        'Clip the fail',
-        'I felt that in my spine'
+        'Wrong vibe for the cue',
+        'That missed the beat',
+        'Chat is losing patience',
+        'That switch felt off',
+        'You lost the room there'
     ],
-    gifts: ['Rose', 'Galaxy', 'Fire x3', 'Crown', 'Rocket'],
+    gifts: ['Glow Stick', 'Disco Ball', 'Spotlight', 'Confetti', 'Encore'],
     warnings: {
-        1: { text: 'Chat warming up', severity: 'low' },
-        2: { text: 'This feed is getting loud', severity: 'medium' },
-        3: { text: 'Stream is slipping', severity: 'high' }
+        1: { text: 'Crowd is warming up', severity: 'low' },
+        2: { text: 'Requests are getting more demanding', severity: 'medium' },
+        3: { text: 'One bad switch and chat will turn', severity: 'high' }
     }
 };
 

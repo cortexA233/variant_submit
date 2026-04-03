@@ -1,11 +1,9 @@
-
-
 export class HeroFSM {
     constructor(hero, params = {}) {
         this.hero = hero;
-        this.currentState = null
+        this.currentState = null;
         this.currentStateKey = null;
-        this.transitState("Idle")
+        this.transitState('Idle', params);
     }
 
     transitState(stateKey, params = {}) {
@@ -16,7 +14,7 @@ export class HeroFSM {
 
         this.currentState?.exitState();
         this.currentStateKey = stateKey;
-        this.currentState = new StateClass(this.hero);
+        this.currentState = new StateClass(this.hero, this);
         this.currentState.enterState(params);
     }
 
@@ -24,8 +22,9 @@ export class HeroFSM {
 }
 
 class HeroBaseState {
-    constructor(hero, params = {}) {
+    constructor(hero, stateMachine) {
         this.hero = hero;
+        this.stateMachine = stateMachine;
     }
 
     enterState(params = {}) {}
@@ -34,48 +33,47 @@ class HeroBaseState {
 
     exitState() {}
 
-    destroy() {
-
-    }
+    destroy() {}
 }
 
 export class HeroIdleState extends HeroBaseState {
-    constructor(hero, params = {}) {
-        super(hero, params);
-    }
-
     enterState(params = {}) {
         super.enterState(params);
-        this.hero.setHeroAnimation("idle", true);
-    }
-
-    destroy() {
-        super.destroy()
+        this.hero.setHeroAnimation('idle', true);
     }
 }
 
-export class HeroSucceedState extends HeroBaseState {
-    constructor(hero, params = {}) {
-        super(hero, params);
-    }
+export class HeroReactionState extends HeroBaseState {
+    enterState(params = {}) {
+        super.enterState(params);
 
-    destroy() {
-        super.destroy()
+        const animationKey = params.animationKey;
+        const didStart = animationKey ? this.hero.playReactionAnimation(animationKey) : false;
+
+        if (!didStart) {
+            this.stateMachine.transitState('Idle');
+        }
     }
 }
 
 export class HeroFailState extends HeroBaseState {
-    constructor(hero, params = {}) {
-        super(hero, params);
+    constructor(hero, stateMachine) {
+        super(hero, stateMachine);
     }
 
-    destroy() {
-        super.destroy()
+    enterState(params = {}) {
+        super.enterState(params);
+        if(params.isTimeOut) {
+            this.hero.setHeroAnimation('embarrassed', false);
+        }else{
+            this.hero.setHeroAnimation('cry', true);
+        }
     }
+
 }
 
 export const HERO_STATE_MAP = {
     Idle: HeroIdleState,
-    Succeed: HeroSucceedState,
-    Fail: HeroFailState,
-}
+    Reaction: HeroReactionState,
+    Fail: HeroFailState
+};

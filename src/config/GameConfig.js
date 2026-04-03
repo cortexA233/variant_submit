@@ -4,11 +4,28 @@ export const GAME_CONFIG = {
         atlasKey: 'manAtlas',
         depth: 10,
         scale: 0.28,
-        defaultMix: 0.15,
+        defaultMix: 0.15
     },
     sceneConfig: {
         screenWidth: 720,
-        screenHeight: 1280,
+        screenHeight: 1280
+    },
+    roundConfig: {
+        baseDurationMs: 4300,
+        resultDelayMs: 1000,
+        urgentTimerThresholdRatio: 0.35,
+        minimumTimerFillRatio: 0.02,
+    },
+    playerStateConfig: {
+        hypeSuccess: 12,
+        hypeFailure: -16,
+        crashSuccess: -10,
+        crashFailure: 35,
+
+        initialCrash: 0,
+        initialHype: 50,
+        crashLimit: 100,
+        hypeLimit: 100,
     },
     cardConfig: {
         cardTheme: {
@@ -24,6 +41,6 @@ export const GAME_CONFIG = {
                 edge: 0xff78be,
                 accent: '#ffd3ea'
             }
-        },
-    },
-}
+        }
+    }
+};

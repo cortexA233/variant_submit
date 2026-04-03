@@ -1,24 +1,35 @@
-import {GAME_CONFIG} from "../config/GameConfig.js";
-
+import {GAME_CONFIG} from '../config/GameConfig.js';
 
 export class ResultPage {
     constructor(scene) {
         this.scene = scene;
         this.buildResultsOverlay();
     }
-    
+
     buildResultsOverlay() {
         this.resultsBackdrop = this.scene.add
-            .rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, GAME_CONFIG.sceneConfig.screenHeight / 2,
-                GAME_CONFIG.sceneConfig.screenWidth, GAME_CONFIG.sceneConfig.screenHeight, 0x06050b, 0.86)
+            .rectangle(
+                GAME_CONFIG.sceneConfig.screenWidth / 2,
+                GAME_CONFIG.sceneConfig.screenHeight / 2,
+                GAME_CONFIG.sceneConfig.screenWidth,
+                GAME_CONFIG.sceneConfig.screenHeight,
+                0x06050b,
+                0.86
+            )
             .setDepth(100)
             .setVisible(false)
             .setInteractive();
         this.resultsBackdrop.on('pointerdown', () => this.scene.restartRun());
 
         this.resultsPanel = this.scene.add
-            .rectangle(GAME_CONFIG.sceneConfig.screenWidth / 2, GAME_CONFIG.sceneConfig.screenHeight / 2,
-                GAME_CONFIG.sceneConfig.screenWidth - 96, 420, 0x130f26, 0.97)
+            .rectangle(
+                GAME_CONFIG.sceneConfig.screenWidth / 2,
+                GAME_CONFIG.sceneConfig.screenHeight / 2,
+                GAME_CONFIG.sceneConfig.screenWidth - 96,
+                420,
+                0x130f26,
+                0.97
+            )
             .setDepth(101)
             .setVisible(false);
         this.resultsPanel.setStrokeStyle(2, 0xff76ab, 0.9);
@@ -49,7 +60,7 @@ export class ResultPage {
             .setVisible(false);
 
         this.resultsPrompt = this.scene.add
-            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 760, 'Press SPACE, ENTER, or tap to go live again.', {
+            .text(GAME_CONFIG.sceneConfig.screenWidth / 2, 760, 'Tap to go live again.', {
                 fontFamily: 'Trebuchet MS',
                 fontSize: '20px',
                 color: '#ffbfd8'
@@ -61,9 +72,9 @@ export class ResultPage {
 
     showResults(resultData = {}) {
         const {
-            headline = 'Stream complete',
+            headline = 'Set complete',
             stats = 'Tap to restart.',
-            prompt = 'Press SPACE, ENTER, or tap to go live again.'
+            prompt = 'Tap to go live again.'
         } = resultData;
 
         this.setVisible(true);
@@ -79,5 +90,4 @@ export class ResultPage {
         this.resultsStats.setVisible(visible);
         this.resultsPrompt.setVisible(visible);
     }
-
 }

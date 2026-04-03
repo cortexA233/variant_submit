@@ -1,22 +1,17 @@
 import Phaser from 'phaser';
-import {HudPage} from "./ui/HudPage.js";
-import {ResultPage} from "./ui/ResultPage.js";
-import {Hero} from "./entities/Hero.js";
-import {GAME_CONFIG} from "./config/GameConfig.js";
-import {Vector2} from "@esotericsoftware/spine-phaser-v4";
-import {Stage} from "./entities/Stage.js";
-import {PlayerInteractionPage} from "./ui/PlayerInteractionPage.js";
-import {GameSceneFSM} from "./GameSceneFSM.js";
-import {PROMPTS} from "./config/PromptConfig.js";
-import {ANIMATIONS} from "./config/AnimationConfig.js";
-import {NOISE_LIBRARY} from "./config/NoiseConfig.js";
-import {HERO_STATE_MAP} from "./entities/HeroFSM.js";
+import {HudPage} from './ui/HudPage.js';
+import {ResultPage} from './ui/ResultPage.js';
+import {Hero} from './entities/Hero.js';
+import {GAME_CONFIG} from './config/GameConfig.js';
+import {Vector2} from '@esotericsoftware/spine-phaser-v4';
+import {Stage} from './entities/Stage.js';
+import {PlayerInteractionPage} from './ui/PlayerInteractionPage.js';
+import {GameSceneFSM} from './GameSceneFSM.js';
+import {PROMPTS} from './config/PromptConfig.js';
+import {ANIMATIONS} from './config/AnimationConfig.js';
+import {NOISE_LIBRARY} from './config/NoiseConfig.js';
 
 const HUD_BAR_WIDTH = 250;
-const MAX_ROUNDS = 4;
-const INITIAL_HYPE = 50;
-const INITIAL_CRASH = 0;
-const CRASH_LIMIT = 100;
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -26,7 +21,6 @@ const toOption = (reactionId, isCorrect, side) => ({
     isCorrect,
     side
 });
-
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -45,34 +39,44 @@ export class GameScene extends Phaser.Scene {
         this.resultPage = new ResultPage(this);
         this.playerInteractionPage = new PlayerInteractionPage(this);
 
-        this.hero = new Hero(this, new Vector2(GAME_CONFIG.sceneConfig.screenWidth * 0.5,
-            GAME_CONFIG.sceneConfig.screenHeight * 0.7));
+        this.hero = new Hero(this, new Vector2(
+            GAME_CONFIG.sceneConfig.screenWidth * 0.5,
+            GAME_CONFIG.sceneConfig.screenHeight * 0.7
+        ));
         this.stage = new Stage(this);
         this.stateMachine = new GameSceneFSM(this);
     }
 
     update(time, deltaTime) {
         this.stage.updateStage(time, deltaTime);
+        this.updatePromptTimer(time);
     }
 
     initializeRunState() {
         this.promptIndex = 0;
         this.activePrompt = null;
         this.lastResolution = null;
+        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs;
+        this.roundEndsAt = 0;
+        this.promptTimerEvent?.remove?.(false);
+        this.promptTimerEvent = null;
+        this.resultRevealEvent?.remove?.(false);
+        this.resultRevealEvent = null;
         this.runState = {
             resolvedRounds: 0,
-            hype: INITIAL_HYPE,
-            crash: INITIAL_CRASH,
-            crashLimit: CRASH_LIMIT,
-            maxRounds: MAX_ROUNDS
+            hype: GAME_CONFIG.playerStateConfig.initialHype,
+            crash: GAME_CONFIG.playerStateConfig.initialCrash,
+            crashLimit: GAME_CONFIG.playerStateConfig.crashLimit,
+            failedByTimeout: false
         };
     }
 
     enterBootState() {
         this.initializeRunState();
-        this.hero.stateMachine.transitState("Idle")
+        this.hero.stateMachine.transitState('Idle');
         this.resultPage.setVisible(false);
         this.playerInteractionPage?.setPrompt(null);
+        this.setPromptTimerRatio(1);
         this.updateHud();
     }
 
@@ -80,7 +84,7 @@ export class GameScene extends Phaser.Scene {
         this.activePrompt = this.createPromptRound();
         this.playerInteractionPage?.setPrompt(this.activePrompt);
         this.resultPage.setVisible(false);
-        this.hero.stateMachine.transitState("Idle")
+        this.startRoundTimer();
 
         if (this.hudPage) {
             this.hudPage.promptText.setText(this.activePrompt.text);
@@ -94,28 +98,70 @@ export class GameScene extends Phaser.Scene {
     }
 
     enterResolvingState(option) {
+        this.clearRoundTimer();
+
         if (!option || !this.activePrompt) {
             return { nextState: 'prompting' };
         }
 
-        const wasCorrect = Boolean(option.isCorrect);
+        const timedOut = Boolean(option.timedOut);
+        const wasCorrect = !timedOut && Boolean(option.isCorrect);
         const prompt = this.activePrompt;
         const successFeedback = prompt.successCommentBursts[this.runState.resolvedRounds % prompt.successCommentBursts.length];
         const failFeedback = prompt.failCommentBursts[this.runState.resolvedRounds % prompt.failCommentBursts.length];
 
         this.runState.resolvedRounds += 1;
-        this.runState.hype = clamp(this.runState.hype + (wasCorrect ? 12 : -16), 0, 100);
+
+        if (timedOut) {
+            this.runState.failedByTimeout = true;
+            this.runState.hype = clamp(this.runState.hype - 20, 0, 100);
+            this.runState.crash = this.runState.crashLimit;
+            this.lastResolution = {
+                wasCorrect: false,
+                timedOut: true,
+                feedback: 'You missed the cue and froze on stream.'
+            };
+
+            this.hero.stateMachine.transitState('Fail', {isTimeOut: true});
+            this.activePrompt = null;
+
+            if (this.hudPage) {
+                this.hudPage.feedbackText
+                    .setText(this.lastResolution.feedback)
+                    .setAlpha(1);
+                this.hudPage.warningText.setText('You missed the beat. The room is gone.');
+            }
+
+            this.updateHud();
+
+            return {
+                nextState: 'result',
+                result: {
+                    ...this.buildResultData(),
+                    delayMs: GAME_CONFIG.roundConfig.resultDelayMs
+                }
+            };
+        }
+
+        this.runState.failedByTimeout = false;
+        this.runState.hype = clamp(this.runState.hype + (wasCorrect ? 
+            GAME_CONFIG.playerStateConfig.hypeSuccess : GAME_CONFIG.playerStateConfig.hypeFailure),
+            0, GAME_CONFIG.playerStateConfig.hypeLimit
+        );
         this.runState.crash = clamp(
-            this.runState.crash + (wasCorrect ? -10 : 35),
-            0,
-            this.runState.crashLimit
+            this.runState.crash + (wasCorrect ?
+                GAME_CONFIG.playerStateConfig.crashSuccess : GAME_CONFIG.playerStateConfig.crashFailure),
+            0, this.runState.crashLimit
         );
         this.lastResolution = {
             wasCorrect,
+            timedOut: false,
             feedback: wasCorrect ? successFeedback : failFeedback
         };
 
-        this.hero?.setHeroAnimation(option.reactionId, false);
+        this.hero.stateMachine.transitState('Reaction', {
+            animationKey: option.reactionId
+        });
 
         if (this.hudPage) {
             this.hudPage.feedbackText
@@ -126,7 +172,8 @@ export class GameScene extends Phaser.Scene {
 
         this.updateHud();
 
-        if (this.runState.crash >= this.runState.crashLimit || this.runState.resolvedRounds >= this.runState.maxRounds) {
+        if (this.runState.crash >= this.runState.crashLimit) {
+            this.hero.stateMachine.transitState('Fail', {isTimeOut: false});
             return {
                 nextState: 'result',
                 result: this.buildResultData()
@@ -137,14 +184,31 @@ export class GameScene extends Phaser.Scene {
     }
 
     enterResultState(resultData) {
+        this.clearRoundTimer();
+        this.activePrompt = null;
         this.playerInteractionPage?.setPrompt(null);
-        this.resultPage?.showResults(resultData);
+        this.setPromptTimerRatio(0);
+
+        const { delayMs = 0, ...finalResult } = resultData ?? {};
+
+        this.resultPage?.setVisible(false);
+        this.resultRevealEvent?.remove?.(false);
+        this.resultRevealEvent = null;
 
         if (this.hudPage) {
-            this.hudPage.warningText.setText(this.runState.crash >= this.runState.crashLimit
-                ? 'Stream collapsed under pressure.'
-                : 'Run complete. Tap to go live again.');
+            this.hudPage.warningText.setText(this.runState.failedByTimeout
+                ? 'You missed the beat. Stream over.'
+                : this.runState.crash >= this.runState.crashLimit
+                    ? 'The chat turned on your routine.'
+                    : 'Set complete. Tap to go live again.');
         }
+
+        if (delayMs > 0 && this.time?.delayedCall) {
+            this.resultRevealEvent = this.time.delayedCall(delayMs, () => this.resultPage?.showResults(finalResult));
+            return;
+        }
+
+        this.resultPage?.showResults(finalResult);
     }
 
     setInteractionEnabled(enabled) {
@@ -157,6 +221,32 @@ export class GameScene extends Phaser.Scene {
 
     restartRun() {
         this.scene.restart();
+    }
+
+    startRoundTimer() {
+        this.currentRoundDuration = GAME_CONFIG.roundConfig.baseDurationMs;
+        this.roundEndsAt = this.time.now + this.currentRoundDuration;
+        this.promptTimerEvent?.remove?.(false);
+        this.promptTimerEvent = this.time.delayedCall(this.currentRoundDuration, () => this.handlePromptTimeout());
+        this.setPromptTimerRatio(1);
+    }
+
+    clearRoundTimer() {
+        this.promptTimerEvent?.remove?.(false);
+        this.promptTimerEvent = null;
+        this.roundEndsAt = 0;
+    }
+
+    handlePromptTimeout() {
+        if (!this.activePrompt || this.stateMachine?.currentState?.name !== 'prompting') {
+            return;
+        }
+
+        this.resolveRound({
+            side: 'timeout',
+            isCorrect: false,
+            timedOut: true
+        });
     }
 
     createPromptRound() {
@@ -195,6 +285,34 @@ export class GameScene extends Phaser.Scene {
         return NOISE_LIBRARY.warnings[1].text;
     }
 
+    updatePromptTimer(time) {
+        if (!this.hudPage?.promptTimerFill || this.stateMachine?.currentState?.name !== 'prompting') {
+            return;
+        }
+
+        if (!this.roundEndsAt || !this.currentRoundDuration) {
+            return;
+        }
+
+        const remaining = Math.max(this.roundEndsAt - time, 0);
+        const ratio = clamp(remaining / this.currentRoundDuration, 0, 1);
+        this.setPromptTimerRatio(ratio);
+    }
+
+    setPromptTimerRatio(ratio) {
+        if (!this.hudPage?.promptTimerFill) {
+            return;
+        }
+
+        const minimumRatio = GAME_CONFIG.roundConfig.minimumTimerFillRatio;
+        const visibleRatio = ratio > 0 ? Math.max(ratio, minimumRatio) : minimumRatio;
+        this.hudPage.promptTimerFill.setScale(visibleRatio, 1);
+        this.hudPage.promptTimerFill.setFillStyle(
+            ratio < GAME_CONFIG.roundConfig.urgentTimerThresholdRatio ? 0xff7d8f : 0x6effbf,
+            1
+        );
+    }
+
     updateHud() {
         if (!this.hudPage) {
             return;
@@ -210,15 +328,20 @@ export class GameScene extends Phaser.Scene {
     }
 
     buildResultData() {
-        const crashedOut = this.runState.crash >= this.runState.crashLimit;
+        const timedOut = this.runState.failedByTimeout;
+        const crashedOut = !timedOut && this.runState.crash >= this.runState.crashLimit;
 
         return {
-            headline: crashedOut ? 'Chat buried the stream' : 'You kept the stream alive',
+            headline: timedOut
+                ? 'You missed the beat and lost the room'
+                : crashedOut
+                    ? 'The crowd turned on your set'
+                    : 'You kept the dance floor alive',
             stats:
-                `Prompts survived: ${this.runState.resolvedRounds}\n` +
+                `Cues cleared: ${this.runState.resolvedRounds}\n` +
                 `Final hype: ${Math.round(this.runState.hype)} / 100\n` +
                 `Crash meter: ${Math.round(this.runState.crash)} / ${this.runState.crashLimit}`,
-            prompt: 'Tap anywhere to restart the run.'
+            prompt: 'Tap anywhere to go live again.'
         };
     }
 }

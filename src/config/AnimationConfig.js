@@ -5,48 +5,55 @@ export const ANIMATIONS = {
         animation: 'Idle',
         resultType: ''
     },
-    // success anim
-    dance: {
-        id: 'dance',
-        label: 'Hit the move',
-        animation: 'Dance',
-        resultType: 'success'
+    // dance success
+    streetGroove: {
+        id: 'streetGroove',
+        label: 'Street Groove',
+        animation: 'TikTokDance',
+        resultType: 'dance'
     },
-    micDrop: {
-        id: 'micDrop',
-        label: 'Drop the mic',
-        animation: 'MicDrop',
-        resultType: 'success'
+    neonBounce: {
+        id: 'neonBounce',
+        label: 'Neon Bounce',
+        animation: 'TikTokDance2',
+        resultType: 'dance'
     },
-    chefsKiss: {
-        id: 'chefsKiss',
-        label: 'Serve it clean',
-        animation: 'ChefsKiss',
-        resultType: 'success'
+    silkWave: {
+        id: 'silkWave',
+        label: 'Silk Wave',
+        animation: 'IndianClassicalDance',
+        resultType: 'dance'
     },
-    victoryJump: {
-        id: 'victoryJump',
-        label: 'Pop off',
-        animation: 'VictoryJump',
-        resultType: 'success'
+    stageStrut: {
+        id: 'stageStrut',
+        label: 'Stage Strut',
+        animation: 'DanceWithMic',
+        resultType: 'dance'
     },
-    // failure anim
-    deadpan: {
-        id: 'deadpan',
-        label: 'Play it cool',
-        animation: 'Deadpan',
-        resultType: 'failure'
+    bollyBeat: {
+        id: 'bollyBeat',
+        label: 'Bolly Beat',
+        animation: 'PunjabiDance',
+        resultType: 'dance'
     },
+    rrrRush: {
+        id: 'rrrRush',
+        label: 'RRR Rush',
+        animation: 'RRRDance',
+        resultType: 'dance'
+    },
+    // fail: time out
     embarrassed: {
         id: 'embarrassed',
-        label: 'Freeze up',
+        label: 'Missed Cue',
         animation: 'Embarrassed',
-        resultType: 'failure'
+        resultType: 'fail'
     },
-    uglyCry: {
-        id: 'uglyCry',
-        label: 'Lose it',
-        animation: 'UglyCry',
-        resultType: 'failure'
+    // fail: crash max
+    cry: {
+        id: 'cry',
+        label: 'Crash Max',
+        animation: 'CryingEffect',
+        resultType: 'fail'
     }
 };
